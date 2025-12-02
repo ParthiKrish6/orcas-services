@@ -4,6 +4,9 @@ import java.io.Serializable;
 
 public class FieldingStats implements Serializable {
 
+	public FieldingStats() {
+	}
+	
 	private static final long serialVersionUID = 1L;
 
 	private String innings;
@@ -75,5 +78,6 @@ public class FieldingStats implements Serializable {
 	public void setRunOuts(String runOuts) {
 		this.runOuts = runOuts;
 	}
+
 
 }
