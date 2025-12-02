@@ -7,7 +7,8 @@ RUN mvn clean package -DskipTests
 
 # Stage 2: Create the final image with JRE
 FROM eclipse-temurin:17-jre-alpine
-WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+WORKDIR /Orcas
+COPY --from=build /Orcas/target/*.war orcas-team-v1.war
+ENTRYPOINT ["java", "-war", "orcas-team-v1.war"]
+
 
