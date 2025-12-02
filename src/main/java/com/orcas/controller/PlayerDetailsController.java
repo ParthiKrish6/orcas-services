@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -55,5 +55,6 @@ public class PlayerDetailsController {
 	public Map<String, Boolean> deleteDetails(@PathVariable(value = AppConstants.ID) Long id) {
 		return playerDetailsServices.deletePlayerDetails(id);
 	}
+
 
 }
