@@ -6,7 +6,7 @@
 
 	<groupId>com.orcas</groupId>
 	<artifactId>orcas-team</artifactId>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<version>v1</version>
 	<name>orcas</name>
 	<description>Project for Orcas Team</description>
@@ -116,4 +116,5 @@
 			</properties>
 		</profile>
 	</profiles>
+
 </project>
