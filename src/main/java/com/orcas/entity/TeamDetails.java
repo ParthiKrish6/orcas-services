@@ -20,6 +20,9 @@ import com.orcas.constants.DbConstants;
 @Table(name = DbConstants.TEAM_DETAILS)
 public class TeamDetails implements Serializable {
 
+	public TeamDetails() {
+	}
+	
 	private static final long serialVersionUID = 1L;
 
 	@Column(name = DbConstants.TEAM_NAME, nullable = false)
@@ -53,4 +56,5 @@ public class TeamDetails implements Serializable {
 		this.matches = matches;
 	}
 	
+
 }
