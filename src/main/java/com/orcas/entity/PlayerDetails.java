@@ -19,6 +19,9 @@ import com.orcas.constants.DbConstants;
 @Table(name = DbConstants.PLAYER_DETAILS)
 public class PlayerDetails implements Serializable {
 
+	public PlayerDetails() {
+	}
+	
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -67,6 +70,7 @@ public class PlayerDetails implements Serializable {
 	public void setBattingDetails(BattingDetails battingDetails) {
 		this.battingDetails = battingDetails;
 	}
+
 
 
 }

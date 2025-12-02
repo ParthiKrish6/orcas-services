@@ -20,6 +20,9 @@ import com.orcas.constants.DbConstants;
 @Table(name = DbConstants.FIELDING_DETAILS)
 public class FieldingDetails implements Serializable {
 
+	public FieldingDetails() {
+	}
+	
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -113,5 +116,6 @@ public class FieldingDetails implements Serializable {
 	public PlayerDetails getPlayerDetails() {
 		return playerDetails;
 	}
+
 
 }

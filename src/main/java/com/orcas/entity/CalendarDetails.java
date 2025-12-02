@@ -16,6 +16,9 @@ import com.orcas.constants.DbConstants;
 @Table(name = DbConstants.CALANDAR_DETAILS)
 public class CalendarDetails implements Serializable {
 
+	public CalendarDetails() {
+	}
+	
 	private static final long serialVersionUID = 1L;
 
 	@Column(name = DbConstants.CALANDAR_START_DATE, nullable = false)
@@ -51,5 +54,6 @@ public class CalendarDetails implements Serializable {
 	public void setAnniversary(Long anniversary) {
 		this.anniversary = anniversary;
 	}
+
 
 }
