@@ -9,7 +9,8 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /Orcas
 COPY --from=build /Orcas/target/*.jar orcas-team-v1.jar
-ENTRYPOINT ["java", "--add-opens=java.base/java.lang=ALL-UNNAMED", "-jar", "orcas-team-v1.jar"]
+ENTRYPOINT ["java", "-jar", "orcas-team-v1.jar"]
+
 
 
 
