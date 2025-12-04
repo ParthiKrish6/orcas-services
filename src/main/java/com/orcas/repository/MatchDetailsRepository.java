@@ -9,13 +9,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.orcas.entity.MatchDetails;
-import com.orcas.constants.DbConstants;
 
 @Repository
 public interface MatchDetailsRepository extends JpaRepository<MatchDetails, Long> {
 	
-	@Query(nativeQuery = true, value = "select * from " + DbConstants.MATCH_DETAILS + " s where s."
-			+ DbConstants.MATCH_DATE + " between :startDate and :endDate")
+	@Query("select s from MatchDetails s where s.matchDate between :startDate and :endDate")
 	List<MatchDetails> getData_between(@Param("startDate") LocalDate date, @Param("endDate") LocalDate date2);
 	
 }

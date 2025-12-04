@@ -99,7 +99,7 @@ public class FieldingDetailsService {
 		List<PlayerDetails> players = playerDetailsRepository.findAll();
 		List<FieldingStats> fieldingStatsList = new ArrayList<FieldingStats>();
 		for (PlayerDetails player : players) {
-			List<FieldingDetails> fieldingDetails = fieldingDetailsRepository.fetchAllByPlayer(player.getId());
+			List<FieldingDetails> fieldingDetails = fieldingDetailsRepository.fetchAllByPlayer(player.getPlayerId());
 			fieldingStatsList.add(getFieldingStats(fieldingDetails, player));
 		}
 		return fieldingStatsList.stream().filter(obj -> !obj.getInnings().equals("0")).collect(Collectors.toList());
@@ -109,7 +109,7 @@ public class FieldingDetailsService {
 		List<PlayerDetails> players = playerDetailsRepository.findAll();
 		List<FieldingStats> fieldingStatsList = new ArrayList<FieldingStats>();
 		for (PlayerDetails player : players) {
-			List<FieldingDetails> fieldingDetails = fieldingDetailsRepository.fetchAllByPlayerDates(player.getId(),
+			List<FieldingDetails> fieldingDetails = fieldingDetailsRepository.fetchAllByPlayerDates(player.getPlayerId(),
 					fromDate, toDate);
 			fieldingStatsList.add(getFieldingStats(fieldingDetails, player));
 		}
@@ -120,7 +120,7 @@ public class FieldingDetailsService {
 		List<PlayerDetails> players = playerDetailsRepository.findAll();
 		List<FieldingStats> fieldingStatsList = new ArrayList<FieldingStats>();
 		for (PlayerDetails player : players) {
-			List<FieldingDetails> fieldingDetails = fieldingDetailsRepository.fetchAllByPlayerAndTeam(player.getId(),
+			List<FieldingDetails> fieldingDetails = fieldingDetailsRepository.fetchAllByPlayerAndTeam(player.getPlayerId(),
 					teamId);
 			fieldingStatsList.add(getFieldingStats(fieldingDetails, player));
 		}
@@ -132,7 +132,7 @@ public class FieldingDetailsService {
 		List<FieldingStats> fieldingStatsList = new ArrayList<FieldingStats>();
 		for (PlayerDetails player : players) {
 			List<FieldingDetails> fieldingDetails = fieldingDetailsRepository
-					.fetchAllByPlayerAndTeamDates(player.getId(), teamId, fromDate, toDate);
+					.fetchAllByPlayerAndTeamDates(player.getPlayerId(), teamId, fromDate, toDate);
 			fieldingStatsList.add(getFieldingStats(fieldingDetails, player));
 		}
 		return fieldingStatsList.stream().filter(obj -> !obj.getInnings().equals("0")).collect(Collectors.toList());

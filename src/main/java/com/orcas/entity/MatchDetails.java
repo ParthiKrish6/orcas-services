@@ -25,9 +25,6 @@ import com.orcas.constants.DbConstants;
 @Table(name = DbConstants.MATCH_DETAILS)
 public class MatchDetails implements Serializable {
 
-	public MatchDetails() {
-	}
-	
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -176,6 +173,4 @@ public class MatchDetails implements Serializable {
 		this.fieldingDetails = fieldingDetails;
 	}
 	
-
 }
-

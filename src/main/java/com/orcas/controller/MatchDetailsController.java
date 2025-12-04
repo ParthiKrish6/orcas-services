@@ -64,5 +64,4 @@ public class MatchDetailsController {
 		return matchDetailsServices.deleteMatchDetails(anniversary);
 	}
 
-
 }

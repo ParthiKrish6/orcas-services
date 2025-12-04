@@ -90,5 +90,4 @@ public class BowlingDetailsController {
 		return bowlingDetailsServices.deleteBowlingDetails(anniversary);
 	}
 
-
 }

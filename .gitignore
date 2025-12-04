@@ -1,0 +1,8 @@
+orcas_database_dev.db
+orcas_database_prod.db
+.settings/
+target/
+uploads/
+.classpath
+.project
+src/main/resources/

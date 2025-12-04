@@ -89,5 +89,4 @@ public class BattingDetailsController {
 		return battingDetailsServices.deleteBattingDetails(anniversary);
 	}
 
-
 }

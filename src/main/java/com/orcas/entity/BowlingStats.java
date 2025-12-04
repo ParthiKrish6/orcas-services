@@ -4,9 +4,6 @@ import java.io.Serializable;
 
 public class BowlingStats implements Serializable {
 
-	public BowlingStats() {
-	}
-	
 	private static final long serialVersionUID = 1L;
 
 	private String innings;
@@ -148,6 +145,5 @@ public class BowlingStats implements Serializable {
 	public void setStrikeRate(String strikeRate) {
 		this.strikeRate = strikeRate;
 	}
-
 
 }

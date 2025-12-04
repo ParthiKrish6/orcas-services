@@ -4,9 +4,6 @@ import java.io.Serializable;
 
 public class BattingStats implements Serializable {
 
-	public BattingStats() {  
-    }
-	
 	private static final long serialVersionUID = 1L;
 
 	private String innings;
@@ -108,6 +105,5 @@ public class BattingStats implements Serializable {
 	public void setTimeSpent(String timeSpent) {
 		this.timeSpent = timeSpent;
 	}
-
 
 }
