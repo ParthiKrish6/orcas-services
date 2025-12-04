@@ -2,7 +2,7 @@ package com.orcas.constants;
 
 public class MappingConstants {
 
-	public static final String URL_API_V1 = "/orcas-services-web/api/v1";
+	public static final String URL_API_V1 = "/api/v1";
 	
 	public static final String URL_UPLOAD_SCORECARD = "/upload-scorecard";
 	
@@ -48,4 +48,5 @@ public class MappingConstants {
 	
 
 }
+
 
