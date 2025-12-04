@@ -55,5 +55,4 @@ public class TeamDetailsController {
 		return teamDetailsServices.deleteTeamDetails(anniversary);
 	}
 
-
 }

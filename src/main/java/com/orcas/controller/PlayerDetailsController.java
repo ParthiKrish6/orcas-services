@@ -56,5 +56,4 @@ public class PlayerDetailsController {
 		return playerDetailsServices.deletePlayerDetails(id);
 	}
 
-
 }

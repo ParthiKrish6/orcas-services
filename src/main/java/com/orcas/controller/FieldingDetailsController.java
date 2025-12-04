@@ -89,5 +89,4 @@ public class FieldingDetailsController {
 		return fieldingDetailsServices.deleteFieldingDetails(anniversary);
 	}
 
-
 }

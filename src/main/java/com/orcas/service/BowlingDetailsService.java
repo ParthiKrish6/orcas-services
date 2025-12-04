@@ -105,7 +105,7 @@ public class BowlingDetailsService {
 		List<PlayerDetails> players = playerDetailsRepository.findAll();
 		List<BowlingStats> bowlingStatsList = new ArrayList<BowlingStats>();
 		for (PlayerDetails player : players) {
-			List<BowlingDetails> bowlingDetails = bowlingDetailsRepository.fetchAllByPlayer(player.getId());
+			List<BowlingDetails> bowlingDetails = bowlingDetailsRepository.fetchAllByPlayer(player.getPlayerId());
 			bowlingStatsList.add(getBowlingStats(bowlingDetails, player));
 		}
 		return bowlingStatsList.stream().filter(obj -> !obj.getInnings().equals("0")).collect(Collectors.toList());
@@ -115,7 +115,7 @@ public class BowlingDetailsService {
 		List<PlayerDetails> players = playerDetailsRepository.findAll();
 		List<BowlingStats> bowlingStatsList = new ArrayList<BowlingStats>();
 		for (PlayerDetails player : players) {
-			List<BowlingDetails> bowlingDetails = bowlingDetailsRepository.fetchAllByPlayerDates(player.getId(),
+			List<BowlingDetails> bowlingDetails = bowlingDetailsRepository.fetchAllByPlayerDates(player.getPlayerId(),
 					fromDate, toDate);
 			bowlingStatsList.add(getBowlingStats(bowlingDetails, player));
 		}
@@ -126,7 +126,7 @@ public class BowlingDetailsService {
 		List<PlayerDetails> players = playerDetailsRepository.findAll();
 		List<BowlingStats> bowlingStatsList = new ArrayList<BowlingStats>();
 		for (PlayerDetails player : players) {
-			List<BowlingDetails> bowlingDetails = bowlingDetailsRepository.fetchAllByPlayerAndTeam(player.getId(),
+			List<BowlingDetails> bowlingDetails = bowlingDetailsRepository.fetchAllByPlayerAndTeam(player.getPlayerId(),
 					teamId);
 			bowlingStatsList.add(getBowlingStats(bowlingDetails, player));
 		}
@@ -137,7 +137,7 @@ public class BowlingDetailsService {
 		List<PlayerDetails> players = playerDetailsRepository.findAll();
 		List<BowlingStats> bowlingStatsList = new ArrayList<BowlingStats>();
 		for (PlayerDetails player : players) {
-			List<BowlingDetails> bowlingDetails = bowlingDetailsRepository.fetchAllByPlayerAndTeamDates(player.getId(),
+			List<BowlingDetails> bowlingDetails = bowlingDetailsRepository.fetchAllByPlayerAndTeamDates(player.getPlayerId(),
 					teamId, fromDate, toDate);
 			bowlingStatsList.add(getBowlingStats(bowlingDetails, player));
 		}

@@ -55,5 +55,4 @@ public class CalendarDetailsController {
 		return calendarDetailsServices.deleteCalendarDetails(anniversary);
 	}
 
-
 }

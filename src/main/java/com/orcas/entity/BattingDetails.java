@@ -9,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import org.hibernate.annotations.ColumnDefault;
@@ -22,8 +21,6 @@ import com.orcas.constants.DbConstants;
 @Table(name = DbConstants.BATTING_DETAILS)
 public class BattingDetails implements Serializable {
 
-	public BattingDetails() {  
-    }
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -57,7 +54,7 @@ public class BattingDetails implements Serializable {
 	@JoinColumn(name = DbConstants.MATCH_ID)
 	private MatchDetails matchDetails;
 	
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = DbConstants.PLAYER_ID)
 	private PlayerDetails playerDetails;
 	
@@ -141,6 +138,4 @@ public class BattingDetails implements Serializable {
 		this.notOut = notOut;
 	}
 	
-
 }
-

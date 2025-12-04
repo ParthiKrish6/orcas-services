@@ -1,33 +1,31 @@
 package com.orcas.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.orcas.constants.DbConstants;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.orcas.constants.DbConstants;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @Table(name = DbConstants.PLAYER_DETAILS)
 public class PlayerDetails implements Serializable {
 
-	public PlayerDetails() {
-	}
-	
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = DbConstants.PLAYER_ID, nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Long playerId;
 
 	@Column(name = DbConstants.PLAYER_NAME, nullable = false)
 	private String playerName;
@@ -35,16 +33,21 @@ public class PlayerDetails implements Serializable {
 	@Column(name = DbConstants.NICK_NAME, nullable = true)
 	private String nickName;
 
-	@OneToOne
-	@JoinColumn(name = DbConstants.BATTING_ID)
-	private BattingDetails battingDetails;
+	@OneToMany(mappedBy = "playerDetails", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<BattingDetails> battingDetails;
 
-	public Long getId() {
-		return id;
+	@OneToMany(mappedBy = "playerDetails", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<BowlingDetails> bowlingDetails;
+
+	@OneToMany(mappedBy = "playerDetails", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<FieldingDetails> fieldingDetails;
+
+	public Long getPlayerId() {
+		return playerId;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setPlayerId(Long playerId) {
+		this.playerId = playerId;
 	}
 
 	public String getPlayerName() {
@@ -62,16 +65,17 @@ public class PlayerDetails implements Serializable {
 	public void setNickName(String nickName) {
 		this.nickName = nickName;
 	}
-	
-	public BattingDetails getBattingDetails() {
-		return battingDetails;
-	}
 
-	public void setBattingDetails(BattingDetails battingDetails) {
+	public void setBattingDetails(List<BattingDetails> battingDetails) {
 		this.battingDetails = battingDetails;
 	}
 
+	public void setBowlingDetails(List<BowlingDetails> bowlingDetails) {
+		this.bowlingDetails = bowlingDetails;
+	}
 
+	public void setFieldingDetails(List<FieldingDetails> fieldingDetails) {
+		this.fieldingDetails = fieldingDetails;
+	}
 
 }
-

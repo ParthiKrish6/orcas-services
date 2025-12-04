@@ -102,7 +102,7 @@ public class BattingDetailsService {
 		List<PlayerDetails> players = playerDetailsRepository.findAll();
 		List<BattingStats> battingStatsList = new ArrayList<BattingStats>();
 		for (PlayerDetails player : players) {
-			List<BattingDetails> battingDetails = battingDetailsRepository.fetchAllByPlayer(player.getId());
+			List<BattingDetails> battingDetails = battingDetailsRepository.fetchAllByPlayer(player.getPlayerId());
 			battingStatsList.add(getBattingStats(battingDetails, player));
 		}
 		return battingStatsList.stream().filter(obj -> !obj.getInnings().equals("0")).collect(Collectors.toList());
@@ -112,7 +112,7 @@ public class BattingDetailsService {
 		List<PlayerDetails> players = playerDetailsRepository.findAll();
 		List<BattingStats> battingStatsList = new ArrayList<BattingStats>();
 		for (PlayerDetails player : players) {
-			List<BattingDetails> battingDetails = battingDetailsRepository.fetchAllByPlayerDates(player.getId(), fromDate, toDate);
+			List<BattingDetails> battingDetails = battingDetailsRepository.fetchAllByPlayerDates(player.getPlayerId(), fromDate, toDate);
 			battingStatsList.add(getBattingStats(battingDetails, player));
 		}
 		return battingStatsList.stream().filter(obj -> !obj.getInnings().equals("0")).collect(Collectors.toList());
@@ -122,7 +122,7 @@ public class BattingDetailsService {
 		List<PlayerDetails> players = playerDetailsRepository.findAll();
 		List<BattingStats> battingStatsList = new ArrayList<BattingStats>();
 		for (PlayerDetails player : players) {
-			List<BattingDetails> battingDetails = battingDetailsRepository.fetchAllByPlayerAndTeam(player.getId(), teamId);
+			List<BattingDetails> battingDetails = battingDetailsRepository.fetchAllByPlayerAndTeam(player.getPlayerId(), teamId);
 			battingStatsList.add(getBattingStats(battingDetails, player));
 		}
 		return battingStatsList.stream().filter(obj -> !obj.getInnings().equals("0")).collect(Collectors.toList());
@@ -132,7 +132,7 @@ public class BattingDetailsService {
 		List<PlayerDetails> players = playerDetailsRepository.findAll();
 		List<BattingStats> battingStatsList = new ArrayList<BattingStats>();
 		for (PlayerDetails player : players) {
-			List<BattingDetails> battingDetails = battingDetailsRepository.fetchAllByPlayerAndTeamDates(player.getId(), teamId, fromDate, toDate);
+			List<BattingDetails> battingDetails = battingDetailsRepository.fetchAllByPlayerAndTeamDates(player.getPlayerId(), teamId, fromDate, toDate);
 			battingStatsList.add(getBattingStats(battingDetails, player));
 		}
 		return battingStatsList.stream().filter(obj -> !obj.getInnings().equals("0")).collect(Collectors.toList());
