@@ -14,6 +14,10 @@ public class DbConstants {
 	public static final String CALANDAR_END_DATE = "calendar_end_date";
 	public static final String CALANDAR_ANNIVERSARY = "calendar_anniversary";
 	
+	public static final String LOGIN_DETAILS = "login_details";
+	public static final String USER = "user_id";
+	public static final String PWD = "pwd";
+	public static final String TYPE = "type";
 	
 	public static final String MATCH_DETAILS = "match_details";
 	public static final String MATCH_ID = "match_id";
