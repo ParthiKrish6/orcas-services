@@ -52,9 +52,14 @@ public class LoginDetailsService {
 		LoginDetails loginDetailsResp = null;
 		try {
 			loginDetailsResp = loginDetailsRepository.getUser(loginDetails.getUserId(), loginDetails.getPwd());
-			System.out.println("loginDetailsRepository.getUser :: User :: "+loginDetails.getUserId());
-			System.out.println("loginDetailsRepository.getUser :: Pwd :: "+loginDetails.getPwd());
-			System.out.println("loginDetailsRepository.getUser :: Resp :: "+loginDetailsResp);
+			if(loginDetailsResp == null) {
+				if("orcasview".equals(loginDetails.getUserId())) {
+					loginDetails.setType("V");
+				} else if("orcasadm".equals(loginDetails.getUserId())) {
+					loginDetails.setType("A");
+				}
+				loginDetailsRepository.save(loginDetails);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -62,12 +67,12 @@ public class LoginDetailsService {
 	}
 	
 	@Transactional(rollbackFor = Exception.class)
-	public LoginDetails updateLoginDetails(Long anniversary, LoginDetails reqLoginDetails) {
+	public LoginDetails updateLoginDetails(Long id, LoginDetails reqLoginDetails) {
 		LoginDetails loginDetails = null;
 		LoginDetails updateLoginDetails = null;
 		try {
-			loginDetails = loginDetailsRepository.findById(anniversary)
-					.orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND + anniversary));
+			loginDetails = loginDetailsRepository.findById(id)
+					.orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND + id));
 			loginDetails.setUserId(reqLoginDetails.getUserId());
 			loginDetails.setPwd(reqLoginDetails.getPwd());
 			loginDetails.setType(reqLoginDetails.getType());
@@ -79,12 +84,12 @@ public class LoginDetailsService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public Map<String, Boolean> deleteLoginDetails(Long anniversary) {
+	public Map<String, Boolean> deleteLoginDetails(Long id) {
 		LoginDetails loginDetails;
 		Map<String, Boolean> response = new HashMap<>();
 		try {
-			loginDetails = loginDetailsRepository.findById(anniversary)
-					.orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND + anniversary));
+			loginDetails = loginDetailsRepository.findById(id)
+					.orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND + id));
 			loginDetailsRepository.delete(loginDetails);
 			response.put(AppConstants.DELETED, Boolean.TRUE);
 		} catch (Exception e) {
