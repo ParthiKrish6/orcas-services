@@ -52,6 +52,7 @@ public class LoginDetailsService {
 		LoginDetails loginDetailsResp = null;
 		try {
 			loginDetailsResp = loginDetailsRepository.getUser(loginDetails.getUserId(), loginDetails.getPwd());
+			System.out.println("loginDetailsRepository.getUser :: Resp :: "+loginDetailsResp);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
