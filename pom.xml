@@ -128,6 +128,13 @@
 				<activatedProperties>prod</activatedProperties>
 			</properties>
 		</profile>
+		
+		<profile>
+			<id>dev-prod</id>
+			<properties>
+				<activatedProperties>dev-prod</activatedProperties>
+			</properties>
+		</profile>
 	</profiles>
 
 </project>

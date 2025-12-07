@@ -9,6 +9,10 @@ public class MappingConstants {
 	public static final String URL_CALANDAR_DETAILS = "/calendar-details";
 	public static final String URL_CALANDAR_DETAILS_ID = "/calendar-details/{id}";
 	
+	public static final String URL_LOGIN_DETAILS = "/login-details";
+	public static final String URL_LOGIN = "/login";
+	public static final String URL_LOGIN_DETAILS_ID = "/login-details/{id}";
+	
 	public static final String URL_TEAM_DETAILS = "/team-details";
 	public static final String URL_TEAM_DETAILS_ID = "/team-details/{id}";
 	
