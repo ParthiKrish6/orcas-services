@@ -3,8 +3,6 @@ package com.orcas.controller;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,6 +18,8 @@ import com.orcas.constants.AppConstants;
 import com.orcas.constants.MappingConstants;
 import com.orcas.entity.CalendarDetails;
 import com.orcas.service.CalendarDetailsService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(MappingConstants.URL_API_V1)
@@ -44,15 +44,15 @@ public class CalendarDetailsController {
 	}
 	
 	@PutMapping(MappingConstants.URL_CALANDAR_DETAILS_ID)
-	public ResponseEntity<CalendarDetails> updateDetails(@PathVariable(value = AppConstants.ID) Long anniversary,
+	public ResponseEntity<CalendarDetails> updateDetails(@PathVariable(value = AppConstants.ID) Long id,
 			@Valid @RequestBody CalendarDetails reqCalendarDetails) {
-		CalendarDetails calendarDetails = calendarDetailsServices.updateCalendarDetails(anniversary, reqCalendarDetails);
+		CalendarDetails calendarDetails = calendarDetailsServices.updateCalendarDetails(id, reqCalendarDetails);
 		return ResponseEntity.ok(calendarDetails);
 	}
 
 	@DeleteMapping(MappingConstants.URL_CALANDAR_DETAILS_ID)
-	public Map<String, Boolean> deleteDetails(@PathVariable(value = AppConstants.ID) Long anniversary) {
-		return calendarDetailsServices.deleteCalendarDetails(anniversary);
+	public Map<String, Boolean> deleteDetails(@PathVariable(value = AppConstants.ID) Long id) {
+		return calendarDetailsServices.deleteCalendarDetails(id);
 	}
 
 }

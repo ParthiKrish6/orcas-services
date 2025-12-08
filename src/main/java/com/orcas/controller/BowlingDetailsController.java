@@ -64,6 +64,7 @@ public class BowlingDetailsController {
 			@PathVariable(value = AppConstants.TO_DATE) @DateTimeFormat(pattern = AppConstants.DATE_FORMAT_YYYY_MM_DD) LocalDate toDate,
 			@PathVariable(value = AppConstants.ID) Long teamId) {
 		return bowlingDetailsServices.getBowlingStatsByDatesAndTeam(fromDate, toDate, teamId);
+		
 	}
 
 	@PostMapping(MappingConstants.URL_BOWLING_DETAILS)

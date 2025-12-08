@@ -8,6 +8,8 @@ public class DbConstants {
 	
 	public static final String ID = "id";
 	
+	public static final String HEALTH_CHECK = "health";
+	
 	public static final String CALANDAR_DETAILS = "calendar_details";
 	public static final String CALANDAR_ID = "calendar_id";
 	public static final String CALANDAR_START_DATE = "calendar_start_date";

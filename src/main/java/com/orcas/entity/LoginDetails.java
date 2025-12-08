@@ -27,6 +27,8 @@ public class LoginDetails implements Serializable {
 	@Column(name = DbConstants.TYPE, nullable = false)
 	private String type;
 
+	private String token;
+
 	public String getUserId() {
 		return userId;
 	}
@@ -49,6 +51,14 @@ public class LoginDetails implements Serializable {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 
 }

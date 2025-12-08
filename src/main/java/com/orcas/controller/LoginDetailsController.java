@@ -20,6 +20,7 @@ import com.orcas.constants.AppConstants;
 import com.orcas.constants.MappingConstants;
 import com.orcas.entity.LoginDetails;
 import com.orcas.service.LoginDetailsService;
+import com.orcas.utils.JwtUtil;
 
 @RestController
 @RequestMapping(MappingConstants.URL_API_V1)
@@ -27,6 +28,9 @@ public class LoginDetailsController {
 	@Autowired
 	private LoginDetailsService loginDetailsServices;
 
+	@Autowired
+    JwtUtil jwtUtil;
+	
 	@GetMapping(MappingConstants.URL_LOGIN_DETAILS)
 	public List<LoginDetails> getAllLoginDetails() {
 		return loginDetailsServices.getLoginAllDetails();
@@ -45,7 +49,12 @@ public class LoginDetailsController {
 	
 	@PostMapping(MappingConstants.URL_LOGIN)
 	public LoginDetails login(@Valid @RequestBody LoginDetails loginDetails) {
-		return loginDetailsServices.login(loginDetails);
+		LoginDetails resp = loginDetailsServices.login(loginDetails);
+		if(resp != null) {
+			String token = jwtUtil.generateToken(loginDetails.getUserId(), resp.getType());
+			resp.setToken(token);
+		}
+		return resp;
 	}
 	
 	@PutMapping(MappingConstants.URL_LOGIN_DETAILS_ID)
