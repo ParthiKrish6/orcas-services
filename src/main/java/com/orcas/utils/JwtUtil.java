@@ -15,7 +15,7 @@ public class JwtUtil {
 
 	public String generateToken(String username, String role) {
 		return Jwts.builder().setSubject(username).claim("role", role).setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 1 * 60 * 1000)) // 30 min expiry
+				.setExpiration(new Date(System.currentTimeMillis() + 15 * 60 * 1000)) // 15 min expiry
 				.signWith(SignatureAlgorithm.HS256, SECRET).compact();
 	}
 
