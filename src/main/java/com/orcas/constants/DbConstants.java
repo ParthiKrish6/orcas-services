@@ -44,6 +44,7 @@ public class DbConstants {
 	public static final String PLAYER_NAME = "player_name";
 	public static final String NICK_NAME = "nick_name";
 	public static final String IMAGE = "image";
+	public static final String PLAYER_IMAGE = "player_image";
 	
 	public static final String BATTING_DETAILS = "batting_details";
 	public static final String BATTING_ID = "batting_id";

@@ -19,6 +19,8 @@ public class FieldingStats implements Serializable {
 	private String saved;
 
 	private String missed;
+	
+	private String image;
 
 	public String getInnings() {
 		return innings;
@@ -75,5 +77,15 @@ public class FieldingStats implements Serializable {
 	public void setRunOuts(String runOuts) {
 		this.runOuts = runOuts;
 	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+	
+	
 
 }

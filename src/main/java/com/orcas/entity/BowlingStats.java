@@ -33,6 +33,8 @@ public class BowlingStats implements Serializable {
 	private String average;
 
 	private String strikeRate;
+	
+	private String image;
 
 	public String getInnings() {
 		return innings;
@@ -145,5 +147,15 @@ public class BowlingStats implements Serializable {
 	public void setStrikeRate(String strikeRate) {
 		this.strikeRate = strikeRate;
 	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+	
+	
 
 }

@@ -142,9 +142,11 @@ public class FieldingDetailsService {
 		FieldingStats fieldingStats = new FieldingStats();
 		fieldingStats.setInnings(String.valueOf(fieldingDetails.size()));
 		fieldingStats.setPlayer(player.getPlayerName());
-		
+		fieldingStats.setImage(player.getImage());
 		fieldingStats.setCatches(String
 				.valueOf(fieldingDetails.stream().map(FieldingDetails::getCatches).mapToLong(Long::parseLong).sum()));
+		fieldingStats.setRunOuts(String
+				.valueOf(fieldingDetails.stream().map(FieldingDetails::getRunOuts).mapToLong(Long::parseLong).sum()));	
 		fieldingStats.setDropped(String
 				.valueOf(fieldingDetails.stream().map(FieldingDetails::getCatchesDropped).mapToLong(Long::parseLong).sum()));
 		fieldingStats.setRunOuts(String

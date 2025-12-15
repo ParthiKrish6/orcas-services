@@ -12,6 +12,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -32,6 +33,10 @@ public class PlayerDetails implements Serializable {
 
 	@Column(name = DbConstants.NICK_NAME, nullable = true)
 	private String nickName;
+	
+	@Lob
+	@Column(name = DbConstants.PLAYER_IMAGE, nullable = true)
+	private String image;
 
 	@OneToMany(mappedBy = "playerDetails", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<BattingDetails> battingDetails;
@@ -64,6 +69,14 @@ public class PlayerDetails implements Serializable {
 
 	public void setNickName(String nickName) {
 		this.nickName = nickName;
+	}
+	
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
 	}
 
 	public void setBattingDetails(List<BattingDetails> battingDetails) {
