@@ -64,7 +64,6 @@ public class PlayerDetailsService {
 					.orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND + id));
 			playerDetails.setPlayerName(reqPlayerDetails.getPlayerName());
 			playerDetails.setNickName(reqPlayerDetails.getNickName());
-			playerDetails.setImage(reqPlayerDetails.getImage());
 			updatePlayerDetails = playerDetailsRepository.save(playerDetails);
 		} catch (Exception e) {
 			e.printStackTrace();

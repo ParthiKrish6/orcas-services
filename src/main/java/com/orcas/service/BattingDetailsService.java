@@ -142,7 +142,7 @@ public class BattingDetailsService {
 		BattingStats battingStats = new BattingStats();
 		battingStats.setInnings(String.valueOf(battingDetails.size()));
 		battingStats.setPlayer(player.getPlayerName());
-		battingStats.setImage(player.getImage());
+		battingStats.setPlayerId(player.getPlayerId()+"");
 		battingStats.setRuns(
 				String.valueOf(battingDetails.stream().map(BattingDetails::getRuns).mapToLong(Long::parseLong).sum()));
 		battingStats.setBalls(

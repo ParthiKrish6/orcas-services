@@ -26,7 +26,7 @@ public class BattingStats implements Serializable {
 
 	private String timeSpent;
 	
-	private String image;
+	private String playerId;
 
 	public String getInnings() {
 		return innings;
@@ -108,14 +108,12 @@ public class BattingStats implements Serializable {
 		this.timeSpent = timeSpent;
 	}
 
-	public String getImage() {
-		return image;
+	public String getPlayerId() {
+		return playerId;
 	}
 
-	public void setImage(String image) {
-		this.image = image;
+	public void setPlayerId(String playerId) {
+		this.playerId = playerId;
 	}
-	
-	
 
 }

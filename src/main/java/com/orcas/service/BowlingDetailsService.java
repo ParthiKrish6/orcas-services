@@ -148,7 +148,7 @@ public class BowlingDetailsService {
 		BowlingStats bowlingStats = new BowlingStats();
 		bowlingStats.setInnings(String.valueOf(bowlingDetails.size()));
 		bowlingStats.setPlayer(player.getPlayerName());
-		bowlingStats.setImage(player.getImage());
+		bowlingStats.setPlayerId(player.getPlayerId()+"");
 		bowlingStats.setRuns(
 				String.valueOf(bowlingDetails.stream().map(BowlingDetails::getRuns).mapToLong(Long::parseLong).sum()));
 		bowlingStats.setFours(

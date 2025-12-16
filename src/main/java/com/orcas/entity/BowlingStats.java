@@ -33,8 +33,8 @@ public class BowlingStats implements Serializable {
 	private String average;
 
 	private String strikeRate;
-	
-	private String image;
+
+	private String playerId;
 
 	public String getInnings() {
 		return innings;
@@ -148,14 +148,12 @@ public class BowlingStats implements Serializable {
 		this.strikeRate = strikeRate;
 	}
 
-	public String getImage() {
-		return image;
+	public String getPlayerId() {
+		return playerId;
 	}
 
-	public void setImage(String image) {
-		this.image = image;
+	public void setPlayerId(String playerId) {
+		this.playerId = playerId;
 	}
-	
-	
 
 }

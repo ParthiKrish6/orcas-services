@@ -20,7 +20,7 @@ public class FieldingStats implements Serializable {
 
 	private String missed;
 	
-	private String image;
+	private String playerId;
 
 	public String getInnings() {
 		return innings;
@@ -78,14 +78,12 @@ public class FieldingStats implements Serializable {
 		this.runOuts = runOuts;
 	}
 
-	public String getImage() {
-		return image;
+	public String getPlayerId() {
+		return playerId;
 	}
 
-	public void setImage(String image) {
-		this.image = image;
+	public void setPlayerId(String playerId) {
+		this.playerId = playerId;
 	}
-	
-	
 
 }
