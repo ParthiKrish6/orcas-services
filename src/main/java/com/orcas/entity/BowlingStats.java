@@ -35,6 +35,17 @@ public class BowlingStats implements Serializable {
 	private String strikeRate;
 
 	private String playerId;
+	
+	private String matches;
+	
+
+	public String getMatches() {
+		return matches;
+	}
+
+	public void setMatches(String matches) {
+		this.matches = matches;
+	}
 
 	public String getInnings() {
 		return innings;

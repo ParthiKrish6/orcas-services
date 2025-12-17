@@ -27,6 +27,17 @@ public class BattingStats implements Serializable {
 	private String timeSpent;
 	
 	private String playerId;
+	
+	private String matches;
+	
+
+	public String getMatches() {
+		return matches;
+	}
+
+	public void setMatches(String matches) {
+		this.matches = matches;
+	}
 
 	public String getInnings() {
 		return innings;

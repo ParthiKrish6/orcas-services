@@ -146,40 +146,41 @@ public class BowlingDetailsService {
 
 	public BowlingStats getBowlingStats(List<BowlingDetails> bowlingDetails, PlayerDetails player) {
 		BowlingStats bowlingStats = new BowlingStats();
-		bowlingStats.setInnings(String.valueOf(bowlingDetails.size()));
+		bowlingStats.setMatches(String.valueOf(bowlingDetails.size()));
+		bowlingStats.setInnings(bowlingDetails.stream().filter(n -> !n.getOvers().equals("DNB")).collect(Collectors.toList()).size()+"");
 		bowlingStats.setPlayer(player.getPlayerName());
 		bowlingStats.setPlayerId(player.getPlayerId()+"");
 		bowlingStats.setRuns(
-				String.valueOf(bowlingDetails.stream().map(BowlingDetails::getRuns).mapToLong(Long::parseLong).sum()));
+				String.valueOf(bowlingDetails.stream().map(BowlingDetails::getRuns).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
 		bowlingStats.setFours(
-				String.valueOf(bowlingDetails.stream().map(BowlingDetails::getFours).mapToLong(Long::parseLong).sum()));
+				String.valueOf(bowlingDetails.stream().map(BowlingDetails::getFours).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
 		bowlingStats.setSixes(
-				String.valueOf(bowlingDetails.stream().map(BowlingDetails::getSixes).mapToLong(Long::parseLong).sum()));
+				String.valueOf(bowlingDetails.stream().map(BowlingDetails::getSixes).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
 		bowlingStats.setMaidens(String
-				.valueOf(bowlingDetails.stream().map(BowlingDetails::getMaidens).mapToLong(Long::parseLong).sum()));
+				.valueOf(bowlingDetails.stream().map(BowlingDetails::getMaidens).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
 		bowlingStats.setWickets(String
-				.valueOf(bowlingDetails.stream().map(BowlingDetails::getWickets).mapToLong(Long::parseLong).sum()));
+				.valueOf(bowlingDetails.stream().map(BowlingDetails::getWickets).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
 		bowlingStats.setDots(
-				String.valueOf(bowlingDetails.stream().map(BowlingDetails::getDots).mapToLong(Long::parseLong).sum()));
+				String.valueOf(bowlingDetails.stream().map(BowlingDetails::getDots).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
 		bowlingStats.setWides(
-				String.valueOf(bowlingDetails.stream().map(BowlingDetails::getWides).mapToLong(Long::parseLong).sum()));
+				String.valueOf(bowlingDetails.stream().map(BowlingDetails::getWides).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
 		bowlingStats.setNoBalls(String
-				.valueOf(bowlingDetails.stream().map(BowlingDetails::getNoballs).mapToLong(Long::parseLong).sum()));
+				.valueOf(bowlingDetails.stream().map(BowlingDetails::getNoballs).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
 
-		int inningsCount = bowlingDetails.size();
+		int inningsCount = bowlingDetails.stream().filter(n -> !n.getOvers().equals("DNB")).collect(Collectors.toList()).size();
 		if (inningsCount > 0) {
 			double average = (double) Long.parseLong(bowlingStats.getRuns())
 					/ Long.parseLong(bowlingStats.getWickets());
 			bowlingStats.setAverage(String.valueOf(average));
 
-			double economy = (double) bowlingDetails.stream().map(BowlingDetails::getEconomy)
+			double economy = (double) bowlingDetails.stream().map(BowlingDetails::getEconomy).filter(n -> !n.equals("DNB"))
 					.mapToDouble(Double::parseDouble).sum() / inningsCount;
 			bowlingStats.setEconomy(String.valueOf(economy));
 
 			Long totalBalls = 0L;
 			int ball = 0;
 			for (BowlingDetails bowl : bowlingDetails) {
-				if (bowl.getOvers() != null && !trimReplaceSpl(bowl.getOvers()).isEmpty()) {
+				if (bowl.getOvers() != null && !trimReplaceSpl(bowl.getOvers()).isEmpty() && !bowl.getOvers().equals("DNB")) {
 					String overs[] = trimReplaceSpl(bowl.getOvers()).split("\\.");
 					if (overs.length > 0) {
 						ball = (Integer.parseInt(overs[0]) * 6);

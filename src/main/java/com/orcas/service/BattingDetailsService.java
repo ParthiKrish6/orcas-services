@@ -140,19 +140,20 @@ public class BattingDetailsService {
 
 	public BattingStats getBattingStats(List<BattingDetails> battingDetails, PlayerDetails player) {
 		BattingStats battingStats = new BattingStats();
-		battingStats.setInnings(String.valueOf(battingDetails.size()));
+		battingStats.setMatches(String.valueOf(battingDetails.size()));
+		battingStats.setInnings(battingDetails.stream().filter(n -> !n.getRuns().equals("DNB")).collect(Collectors.toList()).size()+"");
 		battingStats.setPlayer(player.getPlayerName());
 		battingStats.setPlayerId(player.getPlayerId()+"");
 		battingStats.setRuns(
-				String.valueOf(battingDetails.stream().map(BattingDetails::getRuns).mapToLong(Long::parseLong).sum()));
+				String.valueOf(battingDetails.stream().map(BattingDetails::getRuns).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
 		battingStats.setBalls(
-				String.valueOf(battingDetails.stream().map(BattingDetails::getBalls).mapToLong(Long::parseLong).sum()));
+				String.valueOf(battingDetails.stream().map(BattingDetails::getBalls).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
 		battingStats.setFours(
-				String.valueOf(battingDetails.stream().map(BattingDetails::getFours).mapToLong(Long::parseLong).sum()));
+				String.valueOf(battingDetails.stream().map(BattingDetails::getFours).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
 		battingStats.setSixes(
-				String.valueOf(battingDetails.stream().map(BattingDetails::getSixes).mapToLong(Long::parseLong).sum()));
+				String.valueOf(battingDetails.stream().map(BattingDetails::getSixes).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
 		
-		if(!battingStats.getBalls().equals("0")) {
+		if(!battingStats.getBalls().equals("0") && !battingStats.getBalls().equals("DNB")) {
 			double strike = (double) Long.parseLong(battingStats.getRuns()) / Long.parseLong(battingStats.getBalls());
 			battingStats.setStrikeRate(String.valueOf(strike * 100));	
 		} else {
@@ -163,7 +164,7 @@ public class BattingDetailsService {
 				.collect(Collectors.toList());
 		battingStats.setNotOut(String.valueOf(notOutList.size()));
 
-		Long timeSpent = (Long) battingDetails.stream().map(BattingDetails::getTimeSpent).mapToLong(Long::parseLong).sum();
+		Long timeSpent = (Long) battingDetails.stream().map(BattingDetails::getTimeSpent).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum();
 		
 		long hours = timeSpent / 60; 
         long minutes = timeSpent % 60; 

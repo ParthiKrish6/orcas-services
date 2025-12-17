@@ -55,7 +55,7 @@ public class PdfDataService {
 	
 	@Autowired
 	private FieldingDetailsRepository fieldingDetailsRepository;
-
+	
 	@Transactional(rollbackFor = Exception.class)
 	public void readPdfFile(MultipartFile file) throws FileAlreadyExistsException, IOException {
 		Path filePath = null;
@@ -84,7 +84,7 @@ public class PdfDataService {
 					page3 = pageText;
 				} else if (i == 4) {
 					page4 = pageText;
-				}
+				} 
 			}
 			document.close();
 
@@ -103,13 +103,15 @@ public class PdfDataService {
 			matchDetails = insertMatchDetails(page1, page3, teams, startIndex, details);
 			
 			if ("Y".equals(matchDetails.getBatFirst())) {
-				insertBattingDetails(page3, matchDetails, players);
-				insertBowlingDetails(page4, matchDetails, players);
-				insertFieldingDetails(page4, matchDetails, players);
+				List<String> playerList = getPlayers(page3);
+				insertBattingDetails(page3, matchDetails, players, playerList);
+				insertBowlingDetails(page4, matchDetails, players, playerList);
+				insertFieldingDetails(page4, matchDetails, players, playerList);
 			} else {
-				insertBowlingDetails(page3, matchDetails, players);
-				insertBattingDetails(page4, matchDetails, players);
-				insertFieldingDetails(page3, matchDetails, players);
+				List<String> playerList = getPlayers(page4);
+				insertBowlingDetails(page3, matchDetails, players, playerList);
+				insertBattingDetails(page4, matchDetails, players, playerList);
+				insertFieldingDetails(page3, matchDetails, players, playerList);
 			}
 
 		} catch (FileAlreadyExistsException e) {
@@ -120,6 +122,34 @@ public class PdfDataService {
 		}
 	}
 	
+	private List<String> getPlayers(String pageText) {
+		List<String> playerList = new ArrayList<String>();
+		String[] details = pageText.split("\n");
+		int startIndex = 0;
+		int endIndex = 0;
+		String dnbPlayers = "";
+		for (int i = 0; i < details.length; i++) {
+			if (details[i].contains("No Batsman")) {
+				startIndex = i;
+			} else if (details[i].contains("Extras: ")) {
+				endIndex = i - 1;
+			} else if (details[i].contains("To Bat: ")) {
+				dnbPlayers = details[i].substring(details[i].indexOf("To Bat: ")+8);
+			}
+		}
+		for (int j = startIndex+1; j < endIndex+1; j++) {
+			String removedNumber = trimReplaceSpl(details[j].substring(2));
+			String playerName = removedNumber.substring(0, removedNumber.indexOf(" ("));
+			playerList.add(playerName);
+		}
+		if(!dnbPlayers.trim().isEmpty()) {
+			for(String dnbPlayer : dnbPlayers.split(",")) {
+				playerList.add(dnbPlayer.trim());
+			}
+		}
+		return playerList;
+	}
+
 	private static String trimReplaceSpl(String st) {
 		return st.replace("\r", "").replace("\n", "").replace("†", "").trim();
 	}
@@ -192,7 +222,7 @@ public class PdfDataService {
 		return matchDetailsRepository.save(matchDetails);
 	}
 
-	public void insertBattingDetails(String pageText, MatchDetails matchDetails, List<PlayerDetails> players)
+	public void insertBattingDetails(String pageText, MatchDetails matchDetails, List<PlayerDetails> players, List<String> playedList)
 			throws IOException {
 		List<BattingDetails> battingDetails = new ArrayList<BattingDetails>();
 		String[] details = pageText.split("\n");
@@ -205,7 +235,7 @@ public class PdfDataService {
 				endIndex = i - 1;
 			}
 		}
-
+		List<String> addedPlayers = new ArrayList<String>();
 		for (int j = startIndex+1; j < endIndex+1; j++) {
 			String removedNumber = trimReplaceSpl(details[j].substring(2));
 			System.out.println("Batting ::: Processing ::: "+removedNumber);
@@ -233,12 +263,40 @@ public class PdfDataService {
 	        
 			batting.setPlayerDetails(filteredObjects.get(0));
 			battingDetails.add(batting);
+			addedPlayers.add(playerName);
+		}
+		
+		for(String played : playedList) {
+			if(!addedPlayers.stream().filter(o -> o.trim().equalsIgnoreCase(played.trim())).findAny().isPresent()) {
+				BattingDetails batting = new BattingDetails();
+				batting.setStrikeRate("DNB");
+				batting.setSixes("DNB");
+				batting.setFours("DNB");
+				batting.setTimeSpent("DNB");
+				batting.setBalls("DNB");
+				batting.setRuns("DNB");
+				batting.setNotOut("DNB");
+				batting.setMatchDetails(matchDetails);
+				
+				List<PlayerDetails> filteredObjects = players.stream()
+				            .filter(obj -> (played.equalsIgnoreCase(obj.getPlayerName()) || played.equalsIgnoreCase(obj.getNickName())))
+				            .collect(Collectors.toList());
+		        
+		        if(filteredObjects.size() == 0) {
+		        	throw new IOException("Player Not Found :: "+played);
+		        } else if(filteredObjects.size() > 1) {
+		        	throw new IOException("More than One Player Found :: "+played);
+		        }
+		        
+				batting.setPlayerDetails(filteredObjects.get(0));
+				battingDetails.add(batting);
+			}
 		}
 
 		battingDetailsRepository.saveAll(battingDetails);
 	}
 
-	public void insertBowlingDetails(String pageText, MatchDetails matchDetails, List<PlayerDetails> players)
+	public void insertBowlingDetails(String pageText, MatchDetails matchDetails, List<PlayerDetails> players, List<String> playedList)
 			throws IOException {
 
 		List<BowlingDetails> bowlingDetails = new ArrayList<BowlingDetails>();
@@ -251,6 +309,7 @@ public class PdfDataService {
 			}
 		}
 
+		List<String> addedPlayers = new ArrayList<String>();
 		for (int j = startIndex+1; j < endIndex; j++) {
 			if(details[j] != null && !trimReplaceSpl(details[j]).isEmpty()) {
 				String removedNumber = trimReplaceSpl(details[j]).substring(2);
@@ -283,13 +342,45 @@ public class PdfDataService {
 		        
 				bowling.setPlayerDetails(filteredObjects.get(0));
 				bowlingDetails.add(bowling);
+				addedPlayers.add(playerName);
 			}
 		}
+		
+		for(String played : playedList) {
+			if(!addedPlayers.stream().filter(o -> o.trim().equalsIgnoreCase(played.trim())).findAny().isPresent()) {
+				BowlingDetails bowling = new BowlingDetails();
+				bowling.setEconomy("DNB");
+				bowling.setNoballs("DNB");
+				bowling.setWides("DNB");
+				bowling.setSixes("DNB");
+				bowling.setFours("DNB");
+				bowling.setDots("DNB");
+				bowling.setWickets("DNB");
+				bowling.setRuns("DNB");
+				bowling.setMaidens("DNB");
+				bowling.setOvers("DNB");
+				bowling.setMatchDetails(matchDetails);
+				
+				List<PlayerDetails> filteredObjects = players.stream()
+				            .filter(obj -> (played.equalsIgnoreCase(obj.getPlayerName()) || played.equalsIgnoreCase(obj.getNickName())))
+				            .collect(Collectors.toList());
+		        
+		        if(filteredObjects.size() == 0) {
+		        	throw new IOException("Player Not Found :: "+played);
+		        } else if(filteredObjects.size() > 1) {
+		        	throw new IOException("More than One Player Found :: "+played);
+		        }
+		        
+				bowling.setPlayerDetails(filteredObjects.get(0));
+				bowlingDetails.add(bowling);
+			}
+		}
+		
 		bowlingDetailsRepository.saveAll(bowlingDetails);
 	}
 	
 	
-	public void insertFieldingDetails(String pageText, MatchDetails matchDetails, List<PlayerDetails> players)
+	public void insertFieldingDetails(String pageText, MatchDetails matchDetails, List<PlayerDetails> players, List<String> playedList)
 			throws IOException {
 		List<FieldingDetails> fieldingDetails = new ArrayList<FieldingDetails>();
 		String[] details = pageText.split("\n");
@@ -303,7 +394,6 @@ public class PdfDataService {
 			}
 		}
 		Map<String, FieldingDetails> fieldingMap = new HashMap<String, FieldingDetails>();
-		
 		for (int j = startIndex+1; j < endIndex+1; j++) {
 			String removedNumber = trimReplaceSpl(details[j]).substring(2);
 			System.out.println("Fielding ::: Processing ::: "+removedNumber);
@@ -326,6 +416,31 @@ public class PdfDataService {
 			}
 		}
 		fieldingDetails = new ArrayList<>(fieldingMap.values());
+		
+		for(String played : playedList) {
+			if(!fieldingMap.keySet().stream().filter(o -> o.trim().equalsIgnoreCase(played.trim())).findAny().isPresent()) {
+				FieldingDetails fielding = new FieldingDetails();
+				fielding.setCatches("0");
+				fielding.setCatchesDropped("0");
+				fielding.setRunOuts("0");
+				fielding.setRunsMissed("0");
+				fielding.setRunsSaved("0");
+				fielding.setMatchDetails(matchDetails);
+				
+				List<PlayerDetails> filteredObjects = players.stream()
+				            .filter(obj -> (played.equalsIgnoreCase(obj.getPlayerName()) || played.equalsIgnoreCase(obj.getNickName())))
+				            .collect(Collectors.toList());
+		        
+		        if(filteredObjects.size() == 0) {
+		        	throw new IOException("Player Not Found :: "+played);
+		        } else if(filteredObjects.size() > 1) {
+		        	throw new IOException("More than One Player Found :: "+played);
+		        }
+		        fielding.setPlayerDetails(filteredObjects.get(0));
+		        fieldingDetails.add(fielding);
+			}
+		}
+		
 		fieldingDetailsRepository.saveAll(fieldingDetails);
 	}
 
