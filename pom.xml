@@ -153,8 +153,16 @@
 			</properties>
 		</profile>
 
+		<profile>
+			<id>prod-railway</id>
+			<properties>
+				<activatedProperties>prod-railway</activatedProperties>
+			</properties>
+		</profile>
+
 	</profiles>
 
 </project>
+
 
 
