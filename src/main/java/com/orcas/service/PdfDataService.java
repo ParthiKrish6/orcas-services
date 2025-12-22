@@ -117,8 +117,9 @@ public class PdfDataService {
 		} catch (FileAlreadyExistsException e) {
 			throw e;
 		} catch (Exception e) {
-			Files.deleteIfExists(filePath);
 			throw e;
+		} finally {
+			Files.deleteIfExists(filePath);
 		}
 	}
 	
