@@ -52,14 +52,14 @@ public class LoginDetailsService {
 		LoginDetails loginDetailsResp = null;
 		try {
 			loginDetailsResp = loginDetailsRepository.getUser(loginDetails.getUserId(), loginDetails.getPwd());
-			/* if(loginDetailsResp == null) {
+			if(loginDetailsResp == null) {
 				if("orcasview".equals(loginDetails.getUserId())) {
 					loginDetails.setType("V");
 				} else if("orcasadm".equals(loginDetails.getUserId())) {
 					loginDetails.setType("A");
 				}
 				loginDetailsRepository.save(loginDetails);
-			} */
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

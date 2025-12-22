@@ -147,9 +147,9 @@
 		</profile>
 
 		<profile>
-			<id>prod1</id>
+			<id>prod_local</id>
 			<properties>
-				<activatedProperties>prod1</activatedProperties>
+				<activatedProperties>prod_local</activatedProperties>
 			</properties>
 		</profile>
 
