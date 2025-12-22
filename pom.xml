@@ -154,15 +154,16 @@
 		</profile>
 
 		<profile>
-			<id>prod-railway</id>
+			<id>prod_railway</id>
 			<properties>
-				<activatedProperties>prod-railway</activatedProperties>
+				<activatedProperties>prod_railway</activatedProperties>
 			</properties>
 		</profile>
 
 	</profiles>
 
 </project>
+
 
 
 
