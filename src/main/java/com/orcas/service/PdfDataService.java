@@ -145,14 +145,14 @@ public class PdfDataService {
 		}
 		if(!dnbPlayers.trim().isEmpty()) {
 			for(String dnbPlayer : dnbPlayers.split(",")) {
-				playerList.add(dnbPlayer.trim());
+				playerList.add(trimReplaceSpl(dnbPlayer).trim());
 			}
 		}
 		return playerList;
 	}
 
 	private static String trimReplaceSpl(String st) {
-		return st.replace("\r", "").replace("\n", "").replace("†", "").replace("(sub) ", "").trim();
+		return st.replace("\r", "").replace("\n", "").replace("†", "").replace("(sub) ", "").replace(" (c)", "").trim();
 	}
 
 	public MatchDetails insertMatchDetails(String pageText, String page3, List<TeamDetails> teams, int startIndex, String[] details) throws IOException {
@@ -264,7 +264,7 @@ public class PdfDataService {
 	        
 			batting.setPlayerDetails(filteredObjects.get(0));
 			battingDetails.add(batting);
-			addedPlayers.add(playerName);
+			addedPlayers.add(trimReplaceSpl(playerName));
 		}
 		
 		for(String played : playedList) {
@@ -343,7 +343,7 @@ public class PdfDataService {
 		        
 				bowling.setPlayerDetails(filteredObjects.get(0));
 				bowlingDetails.add(bowling);
-				addedPlayers.add(playerName);
+				addedPlayers.add(trimReplaceSpl(playerName));
 			}
 		}
 		
