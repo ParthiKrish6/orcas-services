@@ -152,7 +152,7 @@ public class PdfDataService {
 	}
 
 	private static String trimReplaceSpl(String st) {
-		return st.replace("\r", "").replace("\n", "").replace("†", "").trim();
+		return st.replace("\r", "").replace("\n", "").replace("†", "").replace("(sub) ", "").trim();
 	}
 
 	public MatchDetails insertMatchDetails(String pageText, String page3, List<TeamDetails> teams, int startIndex, String[] details) throws IOException {
