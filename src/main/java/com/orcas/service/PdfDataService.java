@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +31,7 @@ import com.orcas.repository.BattingDetailsRepository;
 import com.orcas.repository.BowlingDetailsRepository;
 import com.orcas.repository.FieldingDetailsRepository;
 import com.orcas.repository.MatchDetailsRepository;
-import com.orcas.repository.PlayerDetailsRepository;
-import com.orcas.repository.TeamDetailsRepository;
+import com.orcas.utils.CacheNames;
 
 @Service
 public class PdfDataService {
@@ -46,15 +46,18 @@ public class PdfDataService {
 
 	@Autowired
 	private BowlingDetailsRepository bowlingDetailsRepository;
-
-	@Autowired
-	private TeamDetailsRepository teamDetailsRepository;
-
-	@Autowired
-	private PlayerDetailsRepository playerDetailsRepository;
 	
 	@Autowired
 	private FieldingDetailsRepository fieldingDetailsRepository;
+	
+	@Autowired
+	private TeamDetailsService teamDetailsService;
+
+	@Autowired
+	private PlayerDetailsService playerDetailsService;
+	
+	@Autowired
+	CacheAdminService cacheAdminService;
 	
 	@Transactional(rollbackFor = Exception.class)
 	public void readPdfFile(MultipartFile file) throws FileAlreadyExistsException, IOException {
@@ -88,8 +91,8 @@ public class PdfDataService {
 			}
 			document.close();
 
-			List<TeamDetails> teams = teamDetailsRepository.findAll();
-			List<PlayerDetails> players = playerDetailsRepository.findAll();
+			List<TeamDetails> teams = teamDetailsService.getAllTeamDetails();
+			List<PlayerDetails> players = playerDetailsService.getAllPlayerDetails();
 
 			String[] details = page1.split("\n");
 			int startIndex = 0;
@@ -196,7 +199,7 @@ public class PdfDataService {
 		matchDetails.setOpponent(oppTeam.replace("\n", "").replace("\r", ""));
 		matchDetails.setOpponentScore(
 				scoreTeam2.substring(findFirstDigitPosition(scoreTeam2)).replace("\n", "").replace("\r", ""));
-		TeamDetails team = teamDetailsRepository.getTeamFromName(myTeam.replace("\n", "").replace("\r", ""));
+		TeamDetails team = teamDetailsService.getTeamFromName(myTeam.replace("\n", "").replace("\r", ""));
 		if (team == null) {
 			throw new IOException("Team Not Found");
 		}
@@ -220,7 +223,10 @@ public class PdfDataService {
 			matchDetails.setBatFirst("Y");
 		}
 		
-		return matchDetailsRepository.save(matchDetails);
+		MatchDetails resp = matchDetailsRepository.save(matchDetails);
+		cacheAdminService.clearCache(Arrays.asList(CacheNames.MATCH_DETAILS_BY_DATE, CacheNames.MATCH_DETAILS_BY_ID,
+				CacheNames.ALL_MATCH_DETAILS));
+		return resp;
 	}
 
 	public void insertBattingDetails(String pageText, MatchDetails matchDetails, List<PlayerDetails> players, List<String> playedList)
@@ -293,8 +299,13 @@ public class PdfDataService {
 				battingDetails.add(batting);
 			}
 		}
-
+		
 		battingDetailsRepository.saveAll(battingDetails);
+		
+		cacheAdminService.clearCache(Arrays.asList(CacheNames.ALL_BATTING_DETAILS, CacheNames.ALL_BATTING_STATS,
+				CacheNames.BATTING_DETAILS_BY_ID, CacheNames.BATTING_DETAILS_BY_MATCH,
+				CacheNames.BATTING_STATS_BY_DATE, CacheNames.BATTING_STATS_BY_DATE_TEAM,
+				CacheNames.BATTING_STATS_BY_TEAM));
 	}
 
 	public void insertBowlingDetails(String pageText, MatchDetails matchDetails, List<PlayerDetails> players, List<String> playedList)
@@ -378,6 +389,9 @@ public class PdfDataService {
 		}
 		
 		bowlingDetailsRepository.saveAll(bowlingDetails);
+		cacheAdminService.clearCache(Arrays.asList(CacheNames.ALL_BOWLING_DETAILS, CacheNames.ALL_BOWLING_STATS,
+				CacheNames.BOWLING_DETAILS_BY_ID, CacheNames.BOWLING_DETAILS_BY_MATCH, CacheNames.BOWLING_STATS_BY_DATE,
+				CacheNames.BOWLING_STATS_BY_DATE_TEAM, CacheNames.BOWLING_STATS_BY_TEAM));
 	}
 	
 	
@@ -443,6 +457,10 @@ public class PdfDataService {
 		}
 		
 		fieldingDetailsRepository.saveAll(fieldingDetails);
+		cacheAdminService.clearCache(Arrays.asList(CacheNames.ALL_FIELDING_DETAILS, CacheNames.ALL_FIELDING_STATS,
+				CacheNames.FIELDING_DETAILS_BY_ID, CacheNames.FIELDING_DETAILS_BY_MATCH,
+				CacheNames.FIELDING_STATS_BY_DATE, CacheNames.FIELDING_STATS_BY_DATE_TEAM,
+				CacheNames.FIELDING_STATS_BY_TEAM));
 	}
 
 	private void setFieldingMap(Map<String, FieldingDetails> fieldingMap, String catcher, List<PlayerDetails> players, MatchDetails matchDetails, String type) throws IOException {

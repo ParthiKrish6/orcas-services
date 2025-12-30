@@ -5,6 +5,7 @@ public class MappingConstants {
 	public static final String URL_API_V1 = "/api/v1";
 	
 	public static final String HEALTH_CHECK = "/health-check";
+	public static final String CLEAR_CACHE = "/clear-cache";
 	
 	public static final String URL_UPLOAD_SCORECARD = "/upload-scorecard";
 	

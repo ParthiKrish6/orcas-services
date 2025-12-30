@@ -1,11 +1,13 @@
 package com.orcas.service;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,19 +15,26 @@ import com.orcas.constants.AppConstants;
 import com.orcas.entity.MatchDetails;
 import com.orcas.exception.ResourceNotFoundException;
 import com.orcas.repository.MatchDetailsRepository;
+import com.orcas.utils.CacheNames;
 
 @Transactional
 @Service
 public class MatchDetailsService {
+	
 	@Autowired
 	private MatchDetailsRepository matchDetailsRepository;
 	
+	@Autowired
+	CacheAdminService cacheAdminService;
+
 	private String NOT_FOUND = "MatchDetails not found for this id :: ";
 
+	@Cacheable(value = CacheNames.ALL_MATCH_DETAILS, unless = "#result == null || #result.isEmpty()")
 	public List<MatchDetails> getAllMatchDetails() {
 		return matchDetailsRepository.findAll();
 	}
 
+	@Cacheable(value = CacheNames.MATCH_DETAILS_BY_ID, key = "#matchId.toString()", unless = "#result == null")
 	public MatchDetails getMatchDetailsById(Long matchId) {
 		MatchDetails matchDetails = null;
 		try {
@@ -36,23 +45,26 @@ public class MatchDetailsService {
 		}
 		return matchDetails;
 	}
-	
+
+	@Cacheable(value = CacheNames.MATCH_DETAILS_BY_DATE, key = "#fromDate.toString() + '_' + #toDate.toString()", unless = "#result == null || #result.isEmpty()")
 	public List<MatchDetails> getMatchDetailsByDates(LocalDate fromDate, LocalDate toDate) {
 		return matchDetailsRepository.getData_between(fromDate, toDate);
 	}
-	
+
 	@Transactional(rollbackFor = Exception.class)
 	public MatchDetails createMatchDetails(MatchDetails matchDetails) {
 		matchDetails = matchDetailsRepository.save(matchDetails);
+		cacheAdminService.clearCache(Arrays.asList(CacheNames.MATCH_DETAILS_BY_DATE, CacheNames.MATCH_DETAILS_BY_ID,
+				CacheNames.ALL_MATCH_DETAILS));
 		return matchDetails;
 	}
+
 	@Transactional(rollbackFor = Exception.class)
 	public MatchDetails updateMatchDetails(Long matchId, MatchDetails reqMatchDetails) {
 		MatchDetails matchDetails = null;
 		MatchDetails updateMatchDetails = null;
 		try {
-			matchDetails = matchDetailsRepository.findById(matchId)
-					.orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND + matchId));
+			matchDetails = getMatchDetailsById(matchId);
 			matchDetails.setBatFirst(reqMatchDetails.getBatFirst());
 			matchDetails.setCaptain(reqMatchDetails.getCaptain());
 			matchDetails.setMargin(reqMatchDetails.getMargin());
@@ -64,6 +76,8 @@ public class MatchDetailsService {
 			matchDetails.setTeamScore(reqMatchDetails.getTeamScore());
 			matchDetails.setViceCaptain(reqMatchDetails.getViceCaptain());
 			updateMatchDetails = matchDetailsRepository.save(matchDetails);
+			cacheAdminService.clearCache(Arrays.asList(CacheNames.MATCH_DETAILS_BY_DATE, CacheNames.MATCH_DETAILS_BY_ID,
+					CacheNames.ALL_MATCH_DETAILS));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -75,9 +89,10 @@ public class MatchDetailsService {
 		MatchDetails matchDetails;
 		Map<String, Boolean> response = new HashMap<>();
 		try {
-			matchDetails = matchDetailsRepository.findById(matchId)
-					.orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND + matchId));
+			matchDetails = getMatchDetailsById(matchId);
 			matchDetailsRepository.delete(matchDetails);
+			cacheAdminService.clearCache(Arrays.asList(CacheNames.MATCH_DETAILS_BY_DATE, CacheNames.MATCH_DETAILS_BY_ID,
+					CacheNames.ALL_MATCH_DETAILS));
 			response.put(AppConstants.DELETED, Boolean.TRUE);
 		} catch (Exception e) {
 			e.printStackTrace();

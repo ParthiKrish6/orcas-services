@@ -2,12 +2,14 @@ package com.orcas.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +19,7 @@ import com.orcas.entity.BattingStats;
 import com.orcas.entity.PlayerDetails;
 import com.orcas.exception.ResourceNotFoundException;
 import com.orcas.repository.BattingDetailsRepository;
-import com.orcas.repository.PlayerDetailsRepository;
+import com.orcas.utils.CacheNames;
 
 @Transactional
 @Service
@@ -26,14 +28,19 @@ public class BattingDetailsService {
 	private BattingDetailsRepository battingDetailsRepository;
 
 	@Autowired
-	private PlayerDetailsRepository playerDetailsRepository;
+	private PlayerDetailsService playerDetailsService;
+	
+	@Autowired
+	CacheAdminService cacheAdminService;
 
 	private String NOT_FOUND = "BattingDetails not found for this id :: ";
 
+	@Cacheable(value = CacheNames.ALL_BATTING_DETAILS, unless = "#result == null || #result.isEmpty()")
 	public List<BattingDetails> getAllBattingDetails() {
 		return battingDetailsRepository.findAll();
 	}
 
+	@Cacheable(value = CacheNames.BATTING_DETAILS_BY_ID, key = "#battingId.toString()", unless = "#result == null")
 	public BattingDetails getBattingDetailsById(Long battingId) {
 		BattingDetails battingDetails = null;
 		try {
@@ -45,6 +52,7 @@ public class BattingDetailsService {
 		return battingDetails;
 	}
 
+	@Cacheable(value = CacheNames.BATTING_DETAILS_BY_MATCH, key = "#matchId.toString()", unless = "#result == null || #result.isEmpty()")
 	public List<BattingDetails> getBattingDetailsByMatchId(Long matchId) {
 		List<BattingDetails> battingDetails = null;
 		try {
@@ -58,6 +66,11 @@ public class BattingDetailsService {
 	@Transactional(rollbackFor = Exception.class)
 	public BattingDetails createBattingDetails(BattingDetails battingDetails) {
 		battingDetails = battingDetailsRepository.save(battingDetails);
+		cacheAdminService.clearCache(Arrays.asList(CacheNames.ALL_BATTING_DETAILS, CacheNames.ALL_BATTING_STATS,
+				CacheNames.BATTING_DETAILS_BY_ID, CacheNames.BATTING_DETAILS_BY_MATCH,
+				CacheNames.BATTING_STATS_BY_DATE, CacheNames.BATTING_STATS_BY_DATE_TEAM,
+				CacheNames.BATTING_STATS_BY_TEAM));
+		
 		return battingDetails;
 	}
 
@@ -66,8 +79,7 @@ public class BattingDetailsService {
 		BattingDetails battingDetails = null;
 		BattingDetails updateBattingDetails = null;
 		try {
-			battingDetails = battingDetailsRepository.findById(id)
-					.orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND + id));
+			battingDetails = getBattingDetailsById(id);
 			battingDetails.setBalls(reqBattingDetails.getBalls());
 			battingDetails.setFours(reqBattingDetails.getFours());
 			battingDetails.setRuns(reqBattingDetails.getRuns());
@@ -77,6 +89,11 @@ public class BattingDetailsService {
 			battingDetails.setNotOut(reqBattingDetails.getNotOut());
 			battingDetails.setPlayerDetails(reqBattingDetails.getPlayerDetails());
 			updateBattingDetails = battingDetailsRepository.save(battingDetails);
+			
+			cacheAdminService.clearCache(Arrays.asList(CacheNames.ALL_BATTING_DETAILS, CacheNames.ALL_BATTING_STATS,
+					CacheNames.BATTING_DETAILS_BY_ID, CacheNames.BATTING_DETAILS_BY_MATCH,
+					CacheNames.BATTING_STATS_BY_DATE, CacheNames.BATTING_STATS_BY_DATE_TEAM,
+					CacheNames.BATTING_STATS_BY_TEAM));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -84,13 +101,16 @@ public class BattingDetailsService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public Map<String, Boolean> deleteBattingDetails(Long anniversary) {
+	public Map<String, Boolean> deleteBattingDetails(Long id) {
 		BattingDetails battingDetails;
 		Map<String, Boolean> response = new HashMap<>();
 		try {
-			battingDetails = battingDetailsRepository.findById(anniversary)
-					.orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND + anniversary));
+			battingDetails = getBattingDetailsById(id);
 			battingDetailsRepository.delete(battingDetails);
+			cacheAdminService.clearCache(Arrays.asList(CacheNames.ALL_BATTING_DETAILS, CacheNames.ALL_BATTING_STATS,
+					CacheNames.BATTING_DETAILS_BY_ID, CacheNames.BATTING_DETAILS_BY_MATCH,
+					CacheNames.BATTING_STATS_BY_DATE, CacheNames.BATTING_STATS_BY_DATE_TEAM,
+					CacheNames.BATTING_STATS_BY_TEAM));
 			response.put(AppConstants.DELETED, Boolean.TRUE);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -98,8 +118,9 @@ public class BattingDetailsService {
 		return response;
 	}
 
+	@Cacheable(value = CacheNames.ALL_BATTING_STATS, unless = "#result == null || #result.isEmpty()")
 	public List<BattingStats> getAllBattingStats() {
-		List<PlayerDetails> players = playerDetailsRepository.findAll();
+		List<PlayerDetails> players = playerDetailsService.getAllPlayerDetails();
 		List<BattingStats> battingStatsList = new ArrayList<BattingStats>();
 		for (PlayerDetails player : players) {
 			List<BattingDetails> battingDetails = battingDetailsRepository.fetchAllByPlayer(player.getPlayerId());
@@ -107,32 +128,40 @@ public class BattingDetailsService {
 		}
 		return battingStatsList.stream().filter(obj -> !obj.getInnings().equals("0")).collect(Collectors.toList());
 	}
-	
+
+	@Cacheable(value = CacheNames.BATTING_STATS_BY_DATE, key = "#fromDate.toString() + '_' + #toDate.toString()", unless = "#result == null || #result.isEmpty()")
 	public List<BattingStats> getBattingStatsByDates(LocalDate fromDate, LocalDate toDate) {
-		List<PlayerDetails> players = playerDetailsRepository.findAll();
+		List<PlayerDetails> players = playerDetailsService.getAllPlayerDetails();
 		List<BattingStats> battingStatsList = new ArrayList<BattingStats>();
 		for (PlayerDetails player : players) {
-			List<BattingDetails> battingDetails = battingDetailsRepository.fetchAllByPlayerDates(player.getPlayerId(), fromDate, toDate);
+			List<BattingDetails> battingDetails = battingDetailsRepository.fetchAllByPlayerDates(player.getPlayerId(),
+					fromDate, toDate);
 			battingStatsList.add(getBattingStats(battingDetails, player));
 		}
-		return battingStatsList.stream().filter(obj -> !obj.getInnings().equals("0")).collect(Collectors.toList());
+		List<BattingStats> returnList = battingStatsList.stream().filter(obj -> !obj.getInnings().equals("0"))
+				.collect(Collectors.toList());
+		return returnList;
 	}
-	
+
+	@Cacheable(value = CacheNames.BATTING_STATS_BY_TEAM, key = "#teamId.toString()", unless = "#result == null || #result.isEmpty()")
 	public List<BattingStats> getBattingStatsByTeam(Long teamId) {
-		List<PlayerDetails> players = playerDetailsRepository.findAll();
+		List<PlayerDetails> players = playerDetailsService.getAllPlayerDetails();
 		List<BattingStats> battingStatsList = new ArrayList<BattingStats>();
 		for (PlayerDetails player : players) {
-			List<BattingDetails> battingDetails = battingDetailsRepository.fetchAllByPlayerAndTeam(player.getPlayerId(), teamId);
+			List<BattingDetails> battingDetails = battingDetailsRepository.fetchAllByPlayerAndTeam(player.getPlayerId(),
+					teamId);
 			battingStatsList.add(getBattingStats(battingDetails, player));
 		}
 		return battingStatsList.stream().filter(obj -> !obj.getInnings().equals("0")).collect(Collectors.toList());
 	}
-	
+
+	@Cacheable(value = CacheNames.BATTING_STATS_BY_DATE_TEAM, key = "#fromDate.toString() + '_' + #toDate.toString() + '_' + #teamId.toString()", unless = "#result == null || #result.isEmpty()")
 	public List<BattingStats> getBattingStatsByDatesAndTeam(LocalDate fromDate, LocalDate toDate, Long teamId) {
-		List<PlayerDetails> players = playerDetailsRepository.findAll();
+		List<PlayerDetails> players = playerDetailsService.getAllPlayerDetails();
 		List<BattingStats> battingStatsList = new ArrayList<BattingStats>();
 		for (PlayerDetails player : players) {
-			List<BattingDetails> battingDetails = battingDetailsRepository.fetchAllByPlayerAndTeamDates(player.getPlayerId(), teamId, fromDate, toDate);
+			List<BattingDetails> battingDetails = battingDetailsRepository
+					.fetchAllByPlayerAndTeamDates(player.getPlayerId(), teamId, fromDate, toDate);
 			battingStatsList.add(getBattingStats(battingDetails, player));
 		}
 		return battingStatsList.stream().filter(obj -> !obj.getInnings().equals("0")).collect(Collectors.toList());
@@ -141,21 +170,23 @@ public class BattingDetailsService {
 	public BattingStats getBattingStats(List<BattingDetails> battingDetails, PlayerDetails player) {
 		BattingStats battingStats = new BattingStats();
 		battingStats.setMatches(String.valueOf(battingDetails.size()));
-		battingStats.setInnings(battingDetails.stream().filter(n -> !n.getRuns().equals("DNB")).collect(Collectors.toList()).size()+"");
+		battingStats.setInnings(
+				battingDetails.stream().filter(n -> !n.getRuns().equals("DNB")).collect(Collectors.toList()).size()
+						+ "");
 		battingStats.setPlayer(player.getPlayerName());
-		battingStats.setPlayerId(player.getPlayerId()+"");
-		battingStats.setRuns(
-				String.valueOf(battingDetails.stream().map(BattingDetails::getRuns).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
-		battingStats.setBalls(
-				String.valueOf(battingDetails.stream().map(BattingDetails::getBalls).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
-		battingStats.setFours(
-				String.valueOf(battingDetails.stream().map(BattingDetails::getFours).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
-		battingStats.setSixes(
-				String.valueOf(battingDetails.stream().map(BattingDetails::getSixes).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
-		
-		if(!battingStats.getBalls().equals("0") && !battingStats.getBalls().equals("DNB")) {
+		battingStats.setPlayerId(player.getPlayerId() + "");
+		battingStats.setRuns(String.valueOf(battingDetails.stream().map(BattingDetails::getRuns)
+				.filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
+		battingStats.setBalls(String.valueOf(battingDetails.stream().map(BattingDetails::getBalls)
+				.filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
+		battingStats.setFours(String.valueOf(battingDetails.stream().map(BattingDetails::getFours)
+				.filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
+		battingStats.setSixes(String.valueOf(battingDetails.stream().map(BattingDetails::getSixes)
+				.filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
+
+		if (!battingStats.getBalls().equals("0") && !battingStats.getBalls().equals("DNB")) {
 			double strike = (double) Long.parseLong(battingStats.getRuns()) / Long.parseLong(battingStats.getBalls());
-			battingStats.setStrikeRate(String.valueOf(strike * 100));	
+			battingStats.setStrikeRate(String.valueOf(strike * 100));
 		} else {
 			battingStats.setStrikeRate("0.00");
 		}
@@ -164,12 +195,13 @@ public class BattingDetailsService {
 				.collect(Collectors.toList());
 		battingStats.setNotOut(String.valueOf(notOutList.size()));
 
-		Long timeSpent = (Long) battingDetails.stream().map(BattingDetails::getTimeSpent).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum();
-		
-		long hours = timeSpent / 60; 
-        long minutes = timeSpent % 60; 
-        
-		battingStats.setTimeSpent(hours+" : "+minutes);
+		Long timeSpent = (Long) battingDetails.stream().map(BattingDetails::getTimeSpent).filter(n -> !n.equals("DNB"))
+				.mapToLong(Long::parseLong).sum();
+
+		long hours = timeSpent / 60;
+		long minutes = timeSpent % 60;
+
+		battingStats.setTimeSpent(hours + " : " + minutes);
 
 		int inningsCount = battingDetails.size() - notOutList.size();
 		if (inningsCount > 0) {

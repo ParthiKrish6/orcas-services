@@ -35,7 +35,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     		return;
     	} else {
     		String authorizationHeader = request.getHeader("Authorization");
-    		System.out.println(authorizationHeader);
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 String jwt = authorizationHeader.substring(7);
                 if(jwtUtil.isExpired(jwt)) {

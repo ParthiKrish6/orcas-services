@@ -2,12 +2,14 @@ package com.orcas.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +19,7 @@ import com.orcas.entity.BowlingStats;
 import com.orcas.entity.PlayerDetails;
 import com.orcas.exception.ResourceNotFoundException;
 import com.orcas.repository.BowlingDetailsRepository;
-import com.orcas.repository.PlayerDetailsRepository;
+import com.orcas.utils.CacheNames;
 
 @Transactional
 @Service
@@ -26,14 +28,19 @@ public class BowlingDetailsService {
 	private BowlingDetailsRepository bowlingDetailsRepository;
 
 	@Autowired
-	private PlayerDetailsRepository playerDetailsRepository;
+	private PlayerDetailsService playerDetailsService;
+
+	@Autowired
+	CacheAdminService cacheAdminService;
 
 	private String NOT_FOUND = "BowlingDetails not found for this id :: ";
 
+	@Cacheable(value = CacheNames.ALL_BOWLING_DETAILS, unless = "#result == null || #result.isEmpty()")
 	public List<BowlingDetails> getAllBowlingDetails() {
 		return bowlingDetailsRepository.findAll();
 	}
 
+	@Cacheable(value = CacheNames.BOWLING_DETAILS_BY_ID, key = "#bowlingId.toString()", unless = "#result == null")
 	public BowlingDetails getBowlingDetailsById(Long bowlingId) {
 		BowlingDetails bowlingDetails = null;
 		try {
@@ -45,6 +52,7 @@ public class BowlingDetailsService {
 		return bowlingDetails;
 	}
 
+	@Cacheable(value = CacheNames.BOWLING_DETAILS_BY_MATCH, key = "#matchId.toString()", unless = "#result == null || #result.isEmpty()")
 	public List<BowlingDetails> getBowlingDetailsByMatchId(Long matchId) {
 		List<BowlingDetails> bowlingDetails = null;
 		try {
@@ -58,6 +66,9 @@ public class BowlingDetailsService {
 	@Transactional(rollbackFor = Exception.class)
 	public BowlingDetails createBowlingDetails(BowlingDetails bowlingDetails) {
 		bowlingDetails = bowlingDetailsRepository.save(bowlingDetails);
+		cacheAdminService.clearCache(Arrays.asList(CacheNames.ALL_BOWLING_DETAILS, CacheNames.ALL_BOWLING_STATS,
+				CacheNames.BOWLING_DETAILS_BY_ID, CacheNames.BOWLING_DETAILS_BY_MATCH, CacheNames.BOWLING_STATS_BY_DATE,
+				CacheNames.BOWLING_STATS_BY_DATE_TEAM, CacheNames.BOWLING_STATS_BY_TEAM));
 		return bowlingDetails;
 	}
 
@@ -66,8 +77,7 @@ public class BowlingDetailsService {
 		BowlingDetails bowlingDetails = null;
 		BowlingDetails updateBowlingDetails = null;
 		try {
-			bowlingDetails = bowlingDetailsRepository.findById(id)
-					.orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND + id));
+			bowlingDetails = getBowlingDetailsById(id);
 			bowlingDetails.setDots(reqBowlingDetails.getDots());
 			bowlingDetails.setEconomy(reqBowlingDetails.getEconomy());
 			bowlingDetails.setFours(reqBowlingDetails.getFours());
@@ -80,6 +90,10 @@ public class BowlingDetailsService {
 			bowlingDetails.setWides(reqBowlingDetails.getWides());
 			bowlingDetails.setPlayerDetails(reqBowlingDetails.getPlayerDetails());
 			updateBowlingDetails = bowlingDetailsRepository.save(bowlingDetails);
+			cacheAdminService.clearCache(Arrays.asList(CacheNames.ALL_BOWLING_DETAILS, CacheNames.ALL_BOWLING_STATS,
+					CacheNames.BOWLING_DETAILS_BY_ID, CacheNames.BOWLING_DETAILS_BY_MATCH,
+					CacheNames.BOWLING_STATS_BY_DATE, CacheNames.BOWLING_STATS_BY_DATE_TEAM,
+					CacheNames.BOWLING_STATS_BY_TEAM));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -87,13 +101,16 @@ public class BowlingDetailsService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public Map<String, Boolean> deleteBowlingDetails(Long anniversary) {
+	public Map<String, Boolean> deleteBowlingDetails(Long id) {
 		BowlingDetails bowlingDetails;
 		Map<String, Boolean> response = new HashMap<>();
 		try {
-			bowlingDetails = bowlingDetailsRepository.findById(anniversary)
-					.orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND + anniversary));
+			bowlingDetails = getBowlingDetailsById(id);
 			bowlingDetailsRepository.delete(bowlingDetails);
+			cacheAdminService.clearCache(Arrays.asList(CacheNames.ALL_BOWLING_DETAILS, CacheNames.ALL_BOWLING_STATS,
+					CacheNames.BOWLING_DETAILS_BY_ID, CacheNames.BOWLING_DETAILS_BY_MATCH,
+					CacheNames.BOWLING_STATS_BY_DATE, CacheNames.BOWLING_STATS_BY_DATE_TEAM,
+					CacheNames.BOWLING_STATS_BY_TEAM));
 			response.put(AppConstants.DELETED, Boolean.TRUE);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -101,8 +118,9 @@ public class BowlingDetailsService {
 		return response;
 	}
 
+	@Cacheable(value = CacheNames.ALL_BOWLING_STATS, unless = "#result == null || #result.isEmpty()")
 	public List<BowlingStats> getAllBowlingStats() {
-		List<PlayerDetails> players = playerDetailsRepository.findAll();
+		List<PlayerDetails> players = playerDetailsService.getAllPlayerDetails();
 		List<BowlingStats> bowlingStatsList = new ArrayList<BowlingStats>();
 		for (PlayerDetails player : players) {
 			List<BowlingDetails> bowlingDetails = bowlingDetailsRepository.fetchAllByPlayer(player.getPlayerId());
@@ -111,8 +129,9 @@ public class BowlingDetailsService {
 		return bowlingStatsList.stream().filter(obj -> !obj.getInnings().equals("0")).collect(Collectors.toList());
 	}
 
+	@Cacheable(value = CacheNames.BOWLING_STATS_BY_DATE, key = "#fromDate.toString() + '_' + #toDate.toString()", unless = "#result == null || #result.isEmpty()")
 	public List<BowlingStats> getBowlingStatsByDates(LocalDate fromDate, LocalDate toDate) {
-		List<PlayerDetails> players = playerDetailsRepository.findAll();
+		List<PlayerDetails> players = playerDetailsService.getAllPlayerDetails();
 		List<BowlingStats> bowlingStatsList = new ArrayList<BowlingStats>();
 		for (PlayerDetails player : players) {
 			List<BowlingDetails> bowlingDetails = bowlingDetailsRepository.fetchAllByPlayerDates(player.getPlayerId(),
@@ -122,8 +141,9 @@ public class BowlingDetailsService {
 		return bowlingStatsList.stream().filter(obj -> !obj.getInnings().equals("0")).collect(Collectors.toList());
 	}
 
+	@Cacheable(value = CacheNames.BOWLING_STATS_BY_TEAM, key = "#teamId.toString()", unless = "#result == null || #result.isEmpty()")
 	public List<BowlingStats> getBowlingStatsByTeam(Long teamId) {
-		List<PlayerDetails> players = playerDetailsRepository.findAll();
+		List<PlayerDetails> players = playerDetailsService.getAllPlayerDetails();
 		List<BowlingStats> bowlingStatsList = new ArrayList<BowlingStats>();
 		for (PlayerDetails player : players) {
 			List<BowlingDetails> bowlingDetails = bowlingDetailsRepository.fetchAllByPlayerAndTeam(player.getPlayerId(),
@@ -133,12 +153,13 @@ public class BowlingDetailsService {
 		return bowlingStatsList.stream().filter(obj -> !obj.getInnings().equals("0")).collect(Collectors.toList());
 	}
 
+	@Cacheable(value = CacheNames.BOWLING_STATS_BY_DATE_TEAM, key = "#fromDate.toString() + '_' + #toDate.toString() + '_' + #teamId.toString()", unless = "#result == null || #result.isEmpty()")
 	public List<BowlingStats> getBowlingStatsByDatesAndTeam(LocalDate fromDate, LocalDate toDate, Long teamId) {
-		List<PlayerDetails> players = playerDetailsRepository.findAll();
+		List<PlayerDetails> players = playerDetailsService.getAllPlayerDetails();
 		List<BowlingStats> bowlingStatsList = new ArrayList<BowlingStats>();
 		for (PlayerDetails player : players) {
-			List<BowlingDetails> bowlingDetails = bowlingDetailsRepository.fetchAllByPlayerAndTeamDates(player.getPlayerId(),
-					teamId, fromDate, toDate);
+			List<BowlingDetails> bowlingDetails = bowlingDetailsRepository
+					.fetchAllByPlayerAndTeamDates(player.getPlayerId(), teamId, fromDate, toDate);
 			bowlingStatsList.add(getBowlingStats(bowlingDetails, player));
 		}
 		return bowlingStatsList.stream().filter(obj -> !obj.getInnings().equals("0")).collect(Collectors.toList());
@@ -147,40 +168,44 @@ public class BowlingDetailsService {
 	public BowlingStats getBowlingStats(List<BowlingDetails> bowlingDetails, PlayerDetails player) {
 		BowlingStats bowlingStats = new BowlingStats();
 		bowlingStats.setMatches(String.valueOf(bowlingDetails.size()));
-		bowlingStats.setInnings(bowlingDetails.stream().filter(n -> !n.getOvers().equals("DNB")).collect(Collectors.toList()).size()+"");
+		bowlingStats.setInnings(
+				bowlingDetails.stream().filter(n -> !n.getOvers().equals("DNB")).collect(Collectors.toList()).size()
+						+ "");
 		bowlingStats.setPlayer(player.getPlayerName());
-		bowlingStats.setPlayerId(player.getPlayerId()+"");
-		bowlingStats.setRuns(
-				String.valueOf(bowlingDetails.stream().map(BowlingDetails::getRuns).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
-		bowlingStats.setFours(
-				String.valueOf(bowlingDetails.stream().map(BowlingDetails::getFours).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
-		bowlingStats.setSixes(
-				String.valueOf(bowlingDetails.stream().map(BowlingDetails::getSixes).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
-		bowlingStats.setMaidens(String
-				.valueOf(bowlingDetails.stream().map(BowlingDetails::getMaidens).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
-		bowlingStats.setWickets(String
-				.valueOf(bowlingDetails.stream().map(BowlingDetails::getWickets).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
-		bowlingStats.setDots(
-				String.valueOf(bowlingDetails.stream().map(BowlingDetails::getDots).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
-		bowlingStats.setWides(
-				String.valueOf(bowlingDetails.stream().map(BowlingDetails::getWides).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
-		bowlingStats.setNoBalls(String
-				.valueOf(bowlingDetails.stream().map(BowlingDetails::getNoballs).filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
+		bowlingStats.setPlayerId(player.getPlayerId() + "");
+		bowlingStats.setRuns(String.valueOf(bowlingDetails.stream().map(BowlingDetails::getRuns)
+				.filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
+		bowlingStats.setFours(String.valueOf(bowlingDetails.stream().map(BowlingDetails::getFours)
+				.filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
+		bowlingStats.setSixes(String.valueOf(bowlingDetails.stream().map(BowlingDetails::getSixes)
+				.filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
+		bowlingStats.setMaidens(String.valueOf(bowlingDetails.stream().map(BowlingDetails::getMaidens)
+				.filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
+		bowlingStats.setWickets(String.valueOf(bowlingDetails.stream().map(BowlingDetails::getWickets)
+				.filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
+		bowlingStats.setDots(String.valueOf(bowlingDetails.stream().map(BowlingDetails::getDots)
+				.filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
+		bowlingStats.setWides(String.valueOf(bowlingDetails.stream().map(BowlingDetails::getWides)
+				.filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
+		bowlingStats.setNoBalls(String.valueOf(bowlingDetails.stream().map(BowlingDetails::getNoballs)
+				.filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
 
-		int inningsCount = bowlingDetails.stream().filter(n -> !n.getOvers().equals("DNB")).collect(Collectors.toList()).size();
+		int inningsCount = bowlingDetails.stream().filter(n -> !n.getOvers().equals("DNB")).collect(Collectors.toList())
+				.size();
 		if (inningsCount > 0) {
 			double average = (double) Long.parseLong(bowlingStats.getRuns())
 					/ Long.parseLong(bowlingStats.getWickets());
 			bowlingStats.setAverage(String.valueOf(average));
 
-			double economy = (double) bowlingDetails.stream().map(BowlingDetails::getEconomy).filter(n -> !n.equals("DNB"))
-					.mapToDouble(Double::parseDouble).sum() / inningsCount;
+			double economy = (double) bowlingDetails.stream().map(BowlingDetails::getEconomy)
+					.filter(n -> !n.equals("DNB")).mapToDouble(Double::parseDouble).sum() / inningsCount;
 			bowlingStats.setEconomy(String.valueOf(economy));
 
 			Long totalBalls = 0L;
 			int ball = 0;
 			for (BowlingDetails bowl : bowlingDetails) {
-				if (bowl.getOvers() != null && !trimReplaceSpl(bowl.getOvers()).isEmpty() && !bowl.getOvers().equals("DNB")) {
+				if (bowl.getOvers() != null && !trimReplaceSpl(bowl.getOvers()).isEmpty()
+						&& !bowl.getOvers().equals("DNB")) {
 					String overs[] = trimReplaceSpl(bowl.getOvers()).split("\\.");
 					if (overs.length > 0) {
 						ball = (Integer.parseInt(overs[0]) * 6);
@@ -193,10 +218,10 @@ public class BowlingDetailsService {
 			}
 			double strike = (double) totalBalls / Long.parseLong(bowlingStats.getWickets());
 			bowlingStats.setStrikeRate(String.valueOf(strike));
-			Long completeOvers = totalBalls / 6; 
-	        Long remainingBalls = totalBalls % 6; 
+			Long completeOvers = totalBalls / 6;
+			Long remainingBalls = totalBalls % 6;
 			bowlingStats.setOvers(completeOvers + "." + remainingBalls);
-			
+
 		} else {
 			bowlingStats.setAverage("NA");
 			bowlingStats.setEconomy("0.00");
