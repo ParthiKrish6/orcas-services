@@ -35,6 +35,24 @@ public class BattingDetailsController {
 		return battingDetailsServices.getAllBattingDetails();
 	}
 	
+	@GetMapping(MappingConstants.URL_BATTING_DETAILS_PLAYER)
+	public List<BattingDetails> fetchAllByPlayerDates(
+			@PathVariable(value = AppConstants.FROM_DATE) @DateTimeFormat(pattern = AppConstants.DATE_FORMAT_YYYY_MM_DD) LocalDate fromDate,
+			@PathVariable(value = AppConstants.TO_DATE) @DateTimeFormat(pattern = AppConstants.DATE_FORMAT_YYYY_MM_DD) LocalDate toDate,
+			@PathVariable(value = AppConstants.ID) Long playerId) {
+		return battingDetailsServices.fetchAllByPlayerDates(fromDate, toDate, playerId);
+	}
+	
+	@GetMapping(MappingConstants.URL_BATTING_DETAILS_PLAYER_TEAM)
+	public List<BattingDetails> fetchAllByPlayerDatesTeam(
+			@PathVariable(value = AppConstants.FROM_DATE) @DateTimeFormat(pattern = AppConstants.DATE_FORMAT_YYYY_MM_DD) LocalDate fromDate,
+			@PathVariable(value = AppConstants.TO_DATE) @DateTimeFormat(pattern = AppConstants.DATE_FORMAT_YYYY_MM_DD) LocalDate toDate,
+			@PathVariable(value = AppConstants.ID) Long playerId,
+			@PathVariable(value = AppConstants.ID_1) Long teamId) {
+		return battingDetailsServices.fetchAllByPlayerDatesTeam(fromDate, toDate, playerId, teamId);
+	}
+	
+	
 	@GetMapping(MappingConstants.URL_BATTING_STATS)
 	public List<BattingStats> getAllBattingStats() {
 		return battingDetailsServices.getAllBattingStats();

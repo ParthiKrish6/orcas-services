@@ -27,6 +27,8 @@ public class MappingConstants {
 	public static final String URL_PLAYER_DETAILS_ID = "/player-details/{id}";
 	
 	public static final String URL_BATTING_DETAILS = "/batting-details";
+	public static final String URL_BATTING_DETAILS_PLAYER = "/batting-details/{from_date}/{to_date}/{id}";
+	public static final String URL_BATTING_DETAILS_PLAYER_TEAM = "/batting-details/{from_date}/{to_date}/{id}/{id1}";
 	public static final String URL_BATTING_DETAILS_ID = "/batting-details/{id}";
 	public static final String URL_BATTING_DETAILS_MATCH_ID = "/batting-details/match/{id}";
 	
@@ -36,6 +38,8 @@ public class MappingConstants {
 	public static final String URL_BATTING_STATS_DATES_TEAM = "/batting-stats/{from_date}/{to_date}/{id}";
 	
 	public static final String URL_BOWLING_DETAILS = "/bowling-details";
+	public static final String URL_BOWLING_DETAILS_PLAYER = "/bowling-details/{from_date}/{to_date}/{id}";
+	public static final String URL_BOWLING_DETAILS_PLAYER_TEAM = "/bowling-details/{from_date}/{to_date}/{id}/{id1}";
 	public static final String URL_BOWLING_DETAILS_ID = "/bowling-details/{id}";
 	public static final String URL_BOWLING_DETAILS_MATCH_ID = "/bowling-details/match/{id}";
 	
@@ -45,6 +49,8 @@ public class MappingConstants {
 	public static final String URL_BOWLING_STATS_DATES_TEAM = "/bowling-stats/{from_date}/{to_date}/{id}";
 	
 	public static final String URL_FIELDING_DETAILS = "/fielding-details";
+	public static final String URL_FIELDING_DETAILS_PLAYER = "/fielding-details/{from_date}/{to_date}/{id}";
+	public static final String URL_FIELDING_DETAILS_PLAYER_TEAM = "/fielding-details/{from_date}/{to_date}/{id}/{id1}";
 	public static final String URL_FIELDING_DETAILS_ID = "/fielding-details/{id}";
 	public static final String URL_FIELDING_DETAILS_MATCH_ID = "/fielding-details/match/{id}";
 	

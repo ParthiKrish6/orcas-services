@@ -39,6 +39,16 @@ public class FieldingDetailsService {
 	public List<FieldingDetails> getAllFieldingDetails() {
 		return fieldingDetailsRepository.findAll();
 	}
+	
+	@Cacheable(value = CacheNames.ALL_FIELDING_DETAILS_PLAYER_DATES, key = "#fromDate.toString() + '_' + #toDate.toString() + '_' + #playerId.toString()", unless = "#result == null || #result.isEmpty()")
+	public List<FieldingDetails> fetchAllByPlayerDates(LocalDate fromDate, LocalDate toDate, Long playerId) {
+		return fieldingDetailsRepository.fetchAllByPlayerDates(playerId, fromDate, toDate);
+	}
+	
+	@Cacheable(value = CacheNames.ALL_FIELDING_DETAILS_PLAYER_DATES_TEAM, key = "#fromDate.toString() + '_' + #toDate.toString() + '_' + #playerId.toString() + '_' + #teamId.toString()", unless = "#result == null || #result.isEmpty()")
+	public List<FieldingDetails> fetchAllByPlayerDatesTeam(LocalDate fromDate, LocalDate toDate, Long playerId, Long teamId) {
+		return fieldingDetailsRepository.fetchAllByPlayerAndTeamDates(playerId, teamId, fromDate, toDate);
+	}
 
 	@Cacheable(value = CacheNames.FIELDING_DETAILS_BY_ID, key = "#fieldingId.toString()", unless = "#result == null")
 	public FieldingDetails getFieldingDetailsById(Long fieldingId) {

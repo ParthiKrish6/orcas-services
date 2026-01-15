@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.orcas.constants.AppConstants;
 import com.orcas.constants.MappingConstants;
+import com.orcas.entity.BattingDetails;
 import com.orcas.entity.BowlingDetails;
 import com.orcas.entity.BowlingStats;
 import com.orcas.service.BowlingDetailsService;
@@ -39,6 +40,23 @@ public class BowlingDetailsController {
 	public ResponseEntity<BowlingDetails> getBowlingDetailsById(@PathVariable(value = AppConstants.ID) Long bowlingId) {
 		BowlingDetails bowlingDetails = bowlingDetailsServices.getBowlingDetailsById(bowlingId);
 		return ResponseEntity.ok().body(bowlingDetails);
+	}
+	
+	@GetMapping(MappingConstants.URL_BOWLING_DETAILS_PLAYER)
+	public List<BowlingDetails> fetchAllByPlayerDates(
+			@PathVariable(value = AppConstants.FROM_DATE) @DateTimeFormat(pattern = AppConstants.DATE_FORMAT_YYYY_MM_DD) LocalDate fromDate,
+			@PathVariable(value = AppConstants.TO_DATE) @DateTimeFormat(pattern = AppConstants.DATE_FORMAT_YYYY_MM_DD) LocalDate toDate,
+			@PathVariable(value = AppConstants.ID) Long playerId) {
+		return bowlingDetailsServices.fetchAllByPlayerDates(fromDate, toDate, playerId);
+	}
+	
+	@GetMapping(MappingConstants.URL_BOWLING_DETAILS_PLAYER_TEAM)
+	public List<BowlingDetails> fetchAllByPlayerDatesTeam(
+			@PathVariable(value = AppConstants.FROM_DATE) @DateTimeFormat(pattern = AppConstants.DATE_FORMAT_YYYY_MM_DD) LocalDate fromDate,
+			@PathVariable(value = AppConstants.TO_DATE) @DateTimeFormat(pattern = AppConstants.DATE_FORMAT_YYYY_MM_DD) LocalDate toDate,
+			@PathVariable(value = AppConstants.ID) Long playerId,
+			@PathVariable(value = AppConstants.ID_1) Long teamId) {
+		return bowlingDetailsServices.fetchAllByPlayerDatesTeam(fromDate, toDate, playerId, teamId);
 	}
 	
 	@GetMapping(MappingConstants.URL_BOWLING_STATS)

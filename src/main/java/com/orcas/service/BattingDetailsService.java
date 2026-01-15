@@ -39,6 +39,16 @@ public class BattingDetailsService {
 	public List<BattingDetails> getAllBattingDetails() {
 		return battingDetailsRepository.findAll();
 	}
+	
+	@Cacheable(value = CacheNames.ALL_BATTING_DETAILS_PLAYER_DATES, key = "#fromDate.toString() + '_' + #toDate.toString() + '_' + #playerId.toString()", unless = "#result == null || #result.isEmpty()")
+	public List<BattingDetails> fetchAllByPlayerDates(LocalDate fromDate, LocalDate toDate, Long playerId) {
+		return battingDetailsRepository.fetchAllByPlayerDates(playerId, fromDate, toDate);
+	}
+	
+	@Cacheable(value = CacheNames.ALL_BATTING_DETAILS_PLAYER_DATES_TEAM, key = "#fromDate.toString() + '_' + #toDate.toString() + '_' + #playerId.toString() + '_' + #teamId.toString()", unless = "#result == null || #result.isEmpty()")
+	public List<BattingDetails> fetchAllByPlayerDatesTeam(LocalDate fromDate, LocalDate toDate, Long playerId, Long teamId) {
+		return battingDetailsRepository.fetchAllByPlayerAndTeamDates(playerId, teamId, fromDate, toDate);
+	}
 
 	@Cacheable(value = CacheNames.BATTING_DETAILS_BY_ID, key = "#battingId.toString()", unless = "#result == null")
 	public BattingDetails getBattingDetailsById(Long battingId) {

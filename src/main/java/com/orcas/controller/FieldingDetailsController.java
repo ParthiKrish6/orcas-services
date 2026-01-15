@@ -34,6 +34,23 @@ public class FieldingDetailsController {
 	public List<FieldingDetails> getAllFieldingDetails() {
 		return fieldingDetailsServices.getAllFieldingDetails();
 	}
+	
+	@GetMapping(MappingConstants.URL_FIELDING_DETAILS_PLAYER)
+	public List<FieldingDetails> fetchAllByPlayerDates(
+			@PathVariable(value = AppConstants.FROM_DATE) @DateTimeFormat(pattern = AppConstants.DATE_FORMAT_YYYY_MM_DD) LocalDate fromDate,
+			@PathVariable(value = AppConstants.TO_DATE) @DateTimeFormat(pattern = AppConstants.DATE_FORMAT_YYYY_MM_DD) LocalDate toDate,
+			@PathVariable(value = AppConstants.ID) Long playerId) {
+		return fieldingDetailsServices.fetchAllByPlayerDates(fromDate, toDate, playerId);
+	}
+	
+	@GetMapping(MappingConstants.URL_FIELDING_DETAILS_PLAYER_TEAM)
+	public List<FieldingDetails> fetchAllByPlayerDatesTeam(
+			@PathVariable(value = AppConstants.FROM_DATE) @DateTimeFormat(pattern = AppConstants.DATE_FORMAT_YYYY_MM_DD) LocalDate fromDate,
+			@PathVariable(value = AppConstants.TO_DATE) @DateTimeFormat(pattern = AppConstants.DATE_FORMAT_YYYY_MM_DD) LocalDate toDate,
+			@PathVariable(value = AppConstants.ID) Long playerId,
+			@PathVariable(value = AppConstants.ID_1) Long teamId) {
+		return fieldingDetailsServices.fetchAllByPlayerDatesTeam(fromDate, toDate, playerId, teamId);
+	}
 
 	@GetMapping(MappingConstants.URL_FIELDING_DETAILS_ID)
 	public ResponseEntity<FieldingDetails> getFieldingDetailsById(@PathVariable(value = AppConstants.ID) Long fieldingId) {

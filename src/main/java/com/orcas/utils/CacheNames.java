@@ -2,6 +2,8 @@ package com.orcas.utils;
 public interface CacheNames {
 	
 	String ALL_BATTING_DETAILS = "allBattingDetails";
+	String ALL_BATTING_DETAILS_PLAYER_DATES = "allBattingDetailsPlayerDates";
+	String ALL_BATTING_DETAILS_PLAYER_DATES_TEAM = "allBattingDetailsPlayerDatesTeam";
     String BATTING_DETAILS_BY_ID = "battingDetailsById";
     String BATTING_DETAILS_BY_MATCH = "battingDetailsByMatch";
     
@@ -11,6 +13,8 @@ public interface CacheNames {
     String BATTING_STATS_BY_DATE_TEAM = "battingStatsByDateTeam";
     
     String ALL_BOWLING_DETAILS = "allBowlingDetails";
+    String ALL_BOWLING_DETAILS_PLAYER_DATES = "allBowlingDetailsPlayerDates";
+	String ALL_BOWLING_DETAILS_PLAYER_DATES_TEAM = "allBowlingDetailsPlayerDatesTeam";
     String BOWLING_DETAILS_BY_ID = "bowlingDetailsById";
     String BOWLING_DETAILS_BY_MATCH = "bowlingDetailsByMatch";
     
@@ -20,6 +24,8 @@ public interface CacheNames {
     String BOWLING_STATS_BY_DATE_TEAM = "bowlingStatsByDateTeam";
     
     String ALL_FIELDING_DETAILS = "allFieldingDetails";
+    String ALL_FIELDING_DETAILS_PLAYER_DATES = "allFieldingDetailsPlayerDates";
+   	String ALL_FIELDING_DETAILS_PLAYER_DATES_TEAM = "allFieldingDetailsPlayerDatesTeam";
     String FIELDING_DETAILS_BY_ID = "fieldingDetailsById";
     String FIELDING_DETAILS_BY_MATCH = "fieldingDetailsByMatch";
     

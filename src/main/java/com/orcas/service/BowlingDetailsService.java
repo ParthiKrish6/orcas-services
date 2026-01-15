@@ -51,6 +51,16 @@ public class BowlingDetailsService {
 		}
 		return bowlingDetails;
 	}
+	
+	@Cacheable(value = CacheNames.ALL_BOWLING_DETAILS_PLAYER_DATES, key = "#fromDate.toString() + '_' + #toDate.toString() + '_' + #playerId.toString()", unless = "#result == null || #result.isEmpty()")
+	public List<BowlingDetails> fetchAllByPlayerDates(LocalDate fromDate, LocalDate toDate, Long playerId) {
+		return bowlingDetailsRepository.fetchAllByPlayerDates(playerId, fromDate, toDate);
+	}
+	
+	@Cacheable(value = CacheNames.ALL_BOWLING_DETAILS_PLAYER_DATES_TEAM, key = "#fromDate.toString() + '_' + #toDate.toString() + '_' + #playerId.toString() + '_' + #teamId.toString()", unless = "#result == null || #result.isEmpty()")
+	public List<BowlingDetails> fetchAllByPlayerDatesTeam(LocalDate fromDate, LocalDate toDate, Long playerId, Long teamId) {
+		return bowlingDetailsRepository.fetchAllByPlayerAndTeamDates(playerId, teamId, fromDate, toDate);
+	}
 
 	@Cacheable(value = CacheNames.BOWLING_DETAILS_BY_MATCH, key = "#matchId.toString()", unless = "#result == null || #result.isEmpty()")
 	public List<BowlingDetails> getBowlingDetailsByMatchId(Long matchId) {

@@ -9,6 +9,7 @@ public class AppConstants {
 	public static final String PURCHASE = "purchase";
 	public static final String SALE = "sale";
 	public static final String ID = "id";
+	public static final String ID_1 = "id1";
 	public static final String YEAR = "year";
 	public static final String FROM_DATE = "from_date";
 	public static final String TO_DATE = "to_date";
