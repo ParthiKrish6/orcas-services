@@ -59,6 +59,9 @@ public class MatchDetails implements Serializable {
 
 	@Column(name = DbConstants.VICE_CAPTAIN, nullable = true)
 	private String viceCaptain;
+	
+	@Column(name = DbConstants.OVERS, nullable = true)
+	private String overs;
 
 	@ManyToOne
 	@JoinColumn(name = DbConstants.TEAM_ID)
@@ -151,6 +154,14 @@ public class MatchDetails implements Serializable {
 
 	public void setViceCaptain(String viceCaptain) {
 		this.viceCaptain = viceCaptain;
+	}
+	
+	public String getOvers() {
+		return overs;
+	}
+
+	public void setOvers(String overs) {
+		this.overs = overs;
 	}
 
 	public void setTeamDetails(TeamDetails teamDetails) {

@@ -30,6 +30,16 @@ public class BattingStats implements Serializable {
 	
 	private String matches;
 	
+	private String dots;
+	
+
+	public String getDots() {
+		return dots;
+	}
+
+	public void setDots(String dots) {
+		this.dots = dots;
+	}
 
 	public String getMatches() {
 		return matches;

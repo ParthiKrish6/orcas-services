@@ -49,6 +49,9 @@ public class BattingDetails implements Serializable {
 	@Column(name = DbConstants.NOT_OUT, nullable = false)
 	@ColumnDefault("'N'")
 	private String notOut;
+	
+	@Column(name = DbConstants.DOTS, nullable = true)
+	private String dots;
 
 	@ManyToOne
 	@JoinColumn(name = DbConstants.MATCH_ID)
@@ -112,6 +115,14 @@ public class BattingDetails implements Serializable {
 
 	public void setStrikeRate(String strikeRate) {
 		this.strikeRate = strikeRate;
+	}
+	
+	public String getDots() {
+		return dots;
+	}
+
+	public void setDots(String dots) {
+		this.dots = dots;
 	}
 
 	public MatchDetails getMatchDetails() {

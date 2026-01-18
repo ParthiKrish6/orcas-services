@@ -75,6 +75,7 @@ public class MatchDetailsService {
 			matchDetails.setTeamDetails(reqMatchDetails.getTeamDetails());
 			matchDetails.setTeamScore(reqMatchDetails.getTeamScore());
 			matchDetails.setViceCaptain(reqMatchDetails.getViceCaptain());
+			matchDetails.setOvers(reqMatchDetails.getOvers());
 			updateMatchDetails = matchDetailsRepository.save(matchDetails);
 			cacheAdminService.clearCache(Arrays.asList(CacheNames.MATCH_DETAILS_BY_DATE, CacheNames.MATCH_DETAILS_BY_ID,
 					CacheNames.ALL_MATCH_DETAILS));

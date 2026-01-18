@@ -97,6 +97,7 @@ public class BattingDetailsService {
 			battingDetails.setStrikeRate(reqBattingDetails.getStrikeRate());
 			battingDetails.setTimeSpent(reqBattingDetails.getTimeSpent());
 			battingDetails.setNotOut(reqBattingDetails.getNotOut());
+			battingDetails.setDots(reqBattingDetails.getDots());
 			battingDetails.setPlayerDetails(reqBattingDetails.getPlayerDetails());
 			updateBattingDetails = battingDetailsRepository.save(battingDetails);
 			
@@ -193,6 +194,8 @@ public class BattingDetailsService {
 				.filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
 		battingStats.setSixes(String.valueOf(battingDetails.stream().map(BattingDetails::getSixes)
 				.filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
+		battingStats.setDots(String.valueOf(battingDetails.stream().map(BattingDetails::getDots)
+				.filter(n -> n!= null && !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
 
 		if (!battingStats.getBalls().equals("0") && !battingStats.getBalls().equals("DNB")) {
 			double strike = (double) Long.parseLong(battingStats.getRuns()) / Long.parseLong(battingStats.getBalls());
