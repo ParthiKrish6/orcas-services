@@ -195,7 +195,7 @@ public class BattingDetailsService {
 		battingStats.setSixes(String.valueOf(battingDetails.stream().map(BattingDetails::getSixes)
 				.filter(n -> !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
 		battingStats.setDots(String.valueOf(battingDetails.stream().map(BattingDetails::getDots)
-				.filter(n -> n!= null && !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
+				.filter(n -> n!= null && !n.trim().equals("") && !n.equals("DNB")).mapToLong(Long::parseLong).sum()));
 
 		if (!battingStats.getBalls().equals("0") && !battingStats.getBalls().equals("DNB")) {
 			double strike = (double) Long.parseLong(battingStats.getRuns()) / Long.parseLong(battingStats.getBalls());
