@@ -212,8 +212,8 @@ public class BowlingDetailsService {
 			bowlingStats.setEconomy(String.valueOf(economy));
 
 			Long totalBalls = 0L;
-			int ball = 0;
 			for (BowlingDetails bowl : bowlingDetails) {
+				int ball = 0;
 				if (bowl.getOvers() != null && !trimReplaceSpl(bowl.getOvers()).isEmpty()
 						&& !bowl.getOvers().equals("DNB")) {
 					String overs[] = trimReplaceSpl(bowl.getOvers()).split("\\.");
