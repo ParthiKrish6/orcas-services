@@ -283,6 +283,7 @@ public class PdfDataService {
 				batting.setBalls("DNB");
 				batting.setRuns("DNB");
 				batting.setNotOut("DNB");
+				batting.setDots("DNB");
 				batting.setMatchDetails(matchDetails);
 				
 				List<PlayerDetails> filteredObjects = players.stream()
