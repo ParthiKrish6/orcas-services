@@ -179,7 +179,9 @@ public class PdfDataService {
 		LocalDate date = LocalDate.parse(details[startIndex+4].replace("Date ", "").substring(0, 10), formatter);
 
 		String result = details[startIndex+9].replace("Result ", "");
-		if (result.contains(myTeam)) {
+		if(result.trim().equals("Tie")) {
+			matchDetails.setMatchResult("TIE");
+		} else if (result.contains(myTeam)) {
 			matchDetails.setMatchResult("WON");
 		} else {
 			matchDetails.setMatchResult("LOST");
@@ -193,8 +195,12 @@ public class PdfDataService {
 		} else {
 			scoreTeam1 = details[startIndex+8];
 		}
-
-		matchDetails.setMargin(result.substring(result.indexOf("won by ") + 7).replace("\n", "").replace("\r", ""));
+        if(matchDetails.getMatchResult().equals("TIE")) {
+        	matchDetails.setMargin("0 runs");
+        } else {
+        	matchDetails.setMargin(result.substring(result.indexOf("won by ") + 7).replace("\n", "").replace("\r", ""));
+        }
+		
 		matchDetails.setMatchDate(date);
 		matchDetails.setOpponent(oppTeam.replace("\n", "").replace("\r", ""));
 		matchDetails.setOpponentScore(
