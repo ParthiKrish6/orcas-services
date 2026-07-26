@@ -22,6 +22,7 @@ public class MappingConstants {
 	public static final String URL_MATCH_DETAILS = "/match-details";
 	public static final String URL_MATCH_DETAILS_ID = "/match-details/{id}";
 	public static final String URL_MATCH_DETAILS_DATES = "/match-details/{from_date}/{to_date}";
+	public static final String URL_MATCH_DETAILS_DATES_TEAM = "/match-details/{from_date}/{to_date}/{id}";
 	
 	public static final String URL_PLAYER_DETAILS = "/player-details";
 	public static final String URL_PLAYER_DETAILS_ID = "/player-details/{id}";

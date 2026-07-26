@@ -16,4 +16,7 @@ public interface MatchDetailsRepository extends JpaRepository<MatchDetails, Long
 	@Query("select s from MatchDetails s where s.matchDate between :startDate and :endDate")
 	List<MatchDetails> getData_between(@Param("startDate") LocalDate date, @Param("endDate") LocalDate date2);
 	
+	@Query("select s from MatchDetails s where s.matchDate between :startDate and :endDate and s.teamDetails.teamId = :teamId")
+	List<MatchDetails> getData_between_team(@Param("startDate") LocalDate date, @Param("endDate") LocalDate date2, @Param("teamId") Long teamId);
+	
 }

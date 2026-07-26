@@ -44,6 +44,7 @@ public interface CacheNames {
     String ALL_MATCH_DETAILS = "allMatchDetails";
     String MATCH_DETAILS_BY_ID = "matchDetailsById";
     String MATCH_DETAILS_BY_DATE = "matchDetailsByDate";
+    String MATCH_DETAILS_BY_DATE_TEAM = "matchDetailsByDateTeam";
     
     String ALL_PLAYER_DETAILS = "allPlayerDetails";
     String PLAYER_DETAILS_BY_ID = "playerDetailsById";

@@ -46,6 +46,14 @@ public class MatchDetailsController {
 			@PathVariable(value = AppConstants.TO_DATE) @DateTimeFormat(pattern = AppConstants.DATE_FORMAT_YYYY_MM_DD) LocalDate toDate) {
 		return matchDetailsServices.getMatchDetailsByDates(fromDate, toDate);
 	}
+	
+	@GetMapping(MappingConstants.URL_MATCH_DETAILS_DATES_TEAM)
+	public List<MatchDetails> getMatchDetailsByDates(
+			@PathVariable(value = AppConstants.FROM_DATE) @DateTimeFormat(pattern = AppConstants.DATE_FORMAT_YYYY_MM_DD) LocalDate fromDate,
+			@PathVariable(value = AppConstants.TO_DATE) @DateTimeFormat(pattern = AppConstants.DATE_FORMAT_YYYY_MM_DD) LocalDate toDate,
+			@PathVariable(value = AppConstants.ID) Long teamId) {
+		return matchDetailsServices.getMatchDetailsByDatesTeam(fromDate, toDate, teamId);
+	}
 
 	@PostMapping(MappingConstants.URL_MATCH_DETAILS)
 	public MatchDetails createMatchDetails(@Valid @RequestBody MatchDetails matchDetails) {

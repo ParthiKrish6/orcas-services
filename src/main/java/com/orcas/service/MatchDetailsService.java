@@ -50,6 +50,11 @@ public class MatchDetailsService {
 	public List<MatchDetails> getMatchDetailsByDates(LocalDate fromDate, LocalDate toDate) {
 		return matchDetailsRepository.getData_between(fromDate, toDate);
 	}
+	
+	@Cacheable(value = CacheNames.MATCH_DETAILS_BY_DATE_TEAM, key = "#fromDate.toString() + '_' + #toDate.toString() + '_' + #teamId.toString()", unless = "#result == null || #result.isEmpty()")
+	public List<MatchDetails> getMatchDetailsByDatesTeam(LocalDate fromDate, LocalDate toDate, Long teamId) {
+		return matchDetailsRepository.getData_between_team(fromDate, toDate, teamId);
+	}
 
 	@Transactional(rollbackFor = Exception.class)
 	public MatchDetails createMatchDetails(MatchDetails matchDetails) {
